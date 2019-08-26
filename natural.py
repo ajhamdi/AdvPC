@@ -19,7 +19,7 @@ from latent_3d_points.src.tf_utils import reset_tf_graph
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'models'))
-# sys.path.append(os.path.join(BASE_DIR, 'utils'))
+sys.path.append(os.path.join(BASE_DIR, 'utils'))
 # Use to save Neural-Net check-points etc.
 # Use to save Neural-Net check-points etc.
 
