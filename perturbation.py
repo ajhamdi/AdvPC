@@ -12,7 +12,7 @@ sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, 'models'))
 sys.path.append(os.path.join(BASE_DIR, 'utils'))
 
-import tf_nndistance
+# import tf_nndistance
 import joblib
 
 parser = argparse.ArgumentParser()
