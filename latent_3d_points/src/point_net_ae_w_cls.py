@@ -33,6 +33,7 @@ from . autoencoder_w_cls import AutoEncoder
 from . general_utils import apply_augmentations
 
 try:    
+    print("HERE###############")
     from .. external.structural_losses.tf_nndistance import nn_distance
     from .. external.structural_losses.tf_approxmatch import approx_match, match_cost
 except:
