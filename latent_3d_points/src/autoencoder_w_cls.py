@@ -24,8 +24,10 @@ except:
 class Configuration():
     def __init__(self, n_input, encoder, decoder, encoder_args={}, decoder_args={},
                  training_epochs=200, batch_size=10, learning_rate=0.001, denoising=False,
-                 saver_step=None, train_dir=None, z_rotate=False, hard_bound=False, loss='chamfer', gauss_augment=None,
-                 saver_max_to_keep=None, loss_display_step=1, bound_ball=0.1, debug=False,
+                 saver_step=None, train_dir=None, z_rotate=False, hard_bound_mode=0,
+                 dyn_bound_mode=0 , loss='chamfer', gauss_augment=None,
+                 saver_max_to_keep=None, loss_display_step=1, b_infty=0.01, b_two = 0.01,
+                 u_infty=0.01, u_two=0.01, debug=False,
                  n_z=None, n_output=None, latent_vs_recon=1.0, consistent_io=None):
 
         # Parameters for any AE
@@ -39,8 +41,12 @@ class Configuration():
 
         # Training related parameters
         self.batch_size = batch_size
-        self.hard_bound = hard_bound
-        self.bound_ball = bound_ball
+        self.hard_bound_mode = hard_bound_mode
+        self.dyn_bound_mode = dyn_bound_mode 
+        self.b_infty = b_infty
+        self.b_two = b_two
+        self.u_infty = u_infty
+        self.u_two = u_two
         self.learning_rate = learning_rate
         self.loss_display_step = loss_display_step
         self.saver_step = saver_step

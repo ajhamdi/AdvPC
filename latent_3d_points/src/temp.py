@@ -79,3 +79,37 @@ norms = {
 "natural_L_cham_norm_adv":natural_L_cham_norm_adv,
 "natural_L_cham_norm_nat":natural_L_cham_norm_nat
 }
+
+
+
+
+
+
+
+
+
+L_2_norm_adv = []
+L_infty_norm_adv = []
+L_cham_norm_adv = []
+L_emd_norm_adv = []
+natural_L_cham_norm_orig = []
+natural_L_cham_norm_adv = []
+    norms = {
+        "L_2_norm_adv": L_2_norm_adv,
+        "L_infty_norm_adv": L_infty_norm_adv,
+        "L_cham_norm_adv": L_cham_norm_adv,
+        "L_emd_norm_adv": L_emd_norm_adv,
+        "natural_L_cham_norm_orig": natural_L_cham_norm_orig,
+        "natural_L_cham_norm_adv": natural_L_cham_norm_adv,
+    }
+    norms_names = [
+        "L_2_norm_adv",
+        "L_infty_norm_adv",
+        "L_cham_norm_adv",
+        "L_emd_norm_adv",
+        "natural_L_cham_norm_orig",
+        "natural_L_cham_norm_adv",
+        ]
+    return norms 
+
+

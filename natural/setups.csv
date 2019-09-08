@@ -1,0 +1,7 @@
+b_infty,b_two,batch_size,beta_cham,beta_emd,beta_infty,beta_two,data_dir,dump_dir,dyn_bound_mode,evaluation_mode,exp_id,gamma,gpu,hard_bound_mode,initial_alpha,initial_weight,lr_attack,network,num_iter,num_point,phase,results_file,s_infty,save_file,sor,srs,step,target,u_infty,u_two,upper_bound_weight,victim
+0.06,0.8,5,0.0,0.0,0.0,0.0,data,natural/0ZM,1,0,0ZM,0.0,0,1,0.0,10.0,0.01,PN1,100,1024,all,natural/0ZM/0ZM_full.csv,0.1,natural/0ZM/0ZM.csv,1.1,10.0,1,5,0.06,4.0,80,0
+0.01,0.8,5,0.0,0.0,0.0,0.0,data,natural/KZI,1,0,KZI,0.0,0,1,0.0,10.0,0.01,PN1,100,1024,all,natural/KZI/KZI_full.csv,0.1,natural/KZI/KZI.csv,1.1,10.0,1,5,0.01,4.0,80,0
+0.02,0.8,5,0.0,0.0,0.0,0.0,data,natural/XH2,1,0,XH2,0.0,0,1,0.0,10.0,0.01,PN1,100,1024,all,natural/XH2/XH2_full.csv,0.1,natural/XH2/XH2.csv,1.1,10.0,1,5,0.02,4.0,80,0
+0.03,0.8,5,0.0,0.0,0.0,0.0,data,natural/9SN,1,0,9SN,0.0,0,1,0.0,10.0,0.01,PN1,100,1024,all,natural/9SN/9SN_full.csv,0.1,natural/9SN/9SN.csv,1.1,10.0,1,5,0.03,4.0,80,0
+0.08,0.8,5,0.0,0.0,0.0,0.0,data,natural/KNL,1,0,KNL,0.0,0,1,0.0,10.0,0.01,PN1,100,1024,all,natural/KNL/KNL_full.csv,0.1,natural/KNL/KNL.csv,1.1,10.0,1,5,0.08,4.0,80,0
+0.1,0.8,5,0.0,0.0,0.0,0.0,data,natural/BRQ,1,0,BRQ,0.0,0,1,0.0,10.0,0.01,PN1,100,1024,all,natural/BRQ/BRQ_full.csv,0.1,natural/BRQ/BRQ.csv,1.1,10.0,1,5,0.1,4.0,80,0

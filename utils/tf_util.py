@@ -573,3 +573,19 @@ def dropout(inputs,
                       lambda: tf.nn.dropout(inputs, keep_prob, noise_shape),
                       lambda: inputs)
     return outputs
+
+
+def tf_norm_projection(x, norm, norm_type="l2"):
+    """
+    performs norm projection according to norm and norm type [ l2 or linfty] using tensor flow
+    """
+    if norm_type == "l2":
+        reduction_axis = [1, 2]
+        c_norm = tf.sqrt(tf.reduce_sum(tf.square(x), reduction_axis))
+        condition = tf.greater(c_norm, tf.reduce_mean(norm, reduction_axis))
+        x_normalized = tf.where(
+            condition, norm * tf.nn.l2_normalize(x, axis=reduction_axis), x)
+    elif norm_type == "linfty":
+        x_normalized = tf.clip_by_value(
+            x, clip_value_min=-norm, clip_value_max=norm)
+    return x_normalized

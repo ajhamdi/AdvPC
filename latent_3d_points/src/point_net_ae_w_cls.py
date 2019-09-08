@@ -51,14 +51,29 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
         AutoEncoder.__init__(self, name, graph, configuration)
         # print(20*"#", c.hard_bound)
         with tf.variable_scope(name):
-            self.bound_ball = tf.placeholder(shape=[c.batch_size, c.n_input[0],3], dtype=tf.float32)
+            self.bound_ball_infty = tf.placeholder(shape=[c.batch_size, c.n_input[0],3], dtype=tf.float32)
+            self.bound_ball_two = tf.placeholder(
+                shape=[c.batch_size, c.n_input[0], 3], dtype=tf.float32)
+
             self.pert = tf.get_variable(name='pert', shape=[
                                         c.batch_size, c.n_input[0], 3], initializer=tf.truncated_normal_initializer(stddev=0.01))
-            if c.hard_bound:
-                self.pert_ = tf.clip_by_value(
-                    self.pert, clip_value_min=-self.bound_ball, clip_value_max=self.bound_ball)
+            if c.hard_bound_mode == 1:
+                self.pert_ = tf_util.tf_norm_projection(self.pert, norm=c.u_infty, norm_type="linfty")
+                # self.pert_ = tf.clip_by_value(self.pert, clip_value_min=-c.u_infty, clip_value_max=c.u_infty)
+            elif c.hard_bound_mode == 2:
+                self.pert_ = tf_util.tf_norm_projection(
+                    self.pert, norm=c.u_two, norm_type="l2")
             else:
                 self.pert_ = self.pert
+            if c.dyn_bound_mode == 1:
+                self.pert_ = tf_util.tf_norm_projection(
+                    self.pert_, norm=self.bound_ball_infty, norm_type="linfty")
+                # self.pert_ = tf.clip_by_value(
+                #     self.pert_, clip_value_min=-self.bound_ball_infty, clip_value_max=self.bound_ball_infty)
+            elif c.dyn_bound_mode == 2:
+                self.pert_ = tf_util.tf_norm_projection(
+                    self.pert_, norm=self.bound_ball_two, norm_type="l2")
+
             self.x_h = self.x+self.pert_
             self.z = c.encoder(self.x_h, **c.encoder_args)
             self.bottleneck_size = int(self.z.get_shape()[1])
