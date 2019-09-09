@@ -249,7 +249,7 @@ def evaluate(setup, results,targets_list, victims_list):
     norms_names = ["natural_L_cham_norm_orig"]
     ev_results = ListDict(accuracies_names+norms_names)
     setups = ListDict(setup.keys())
-    save_results(setup["results_file"],ev_results.combine(setups))
+    save_results(setup["results_file"],ev_results+setups)
     for target in targets_list:
         setup["target"] = target
         for victim in victims_list:
@@ -261,7 +261,7 @@ def evaluate(setup, results,targets_list, victims_list):
                 [setups.append(setup) for ii in range(setup["batch_size"])]
                 ev_results.partial_extend(
                     ListDict(norms)).partial_extend(ListDict(predictions))
-                save_results(setup["results_file"],ev_results.combine(setups))
+                save_results(setup["results_file"],ev_results + setups)
 
-    save_results(setup["results_file"],ev_results.combine(setups).combine(results))
+    save_results(setup["results_file"],ev_results+setups+results)
     return ev_results 

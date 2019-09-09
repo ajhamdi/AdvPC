@@ -120,10 +120,24 @@ class ListDict(object):
             self.listdict[k].extend(v)
         return self
 
+    def __add__(self, newlistdict):
+        return ListDict(merge_two_dicts(self.raw_dict(), newlistdict.raw_dict()))
 
     def combine(self, newlistdict):
-        return ListDict(merge_two_dicts(self.raw_dict(), newlistdict.raw_dict()))
+        self.listdict = merge_two_dicts(self.raw_dict(), newlistdict.raw_dict())
+        return self
         # self.listdict = {**self.raw_dict(), **newlistdict.raw_dict()}
+
+    def __sub__(self, newlistdict):
+        new_dict = ListDict(self.raw_dict())
+        for k, v in newlistdict.raw_dict().items():
+            new_dict.raw_dict().pop(k, None)
+        return new_dict
+    
+    def remove(self, newlistdict):
+        for k, v in newlistdict.raw_dict().items():
+            self.listdict.pop(k, None)
+        return self
 
     def chek_error(self):
         for k, v in self.items():

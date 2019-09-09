@@ -381,7 +381,7 @@ def attack(setup,targets_list,victims_list):
         # the class index of selected 10 largest classed in ModelNet40
         results = ListDict(norms_names)
         setups = ListDict(setup.keys())
-        save_results(setup["save_file"], results.combine(setups))
+        save_results(setup["save_file"], results+setups)
         for target in targets_list:
             setup["target"] = target
             for victim in victims_list:
@@ -396,11 +396,11 @@ def attack(setup,targets_list,victims_list):
                     [setups.append(setup) for ii in range(setup["batch_size"])]
                     results.extend(ListDict(norms))
                     # compiled_results.chek_error()
-                    save_results(setup["save_file"], results.combine(setups))
+                    save_results(setup["save_file"], results+setups)
                     # np.save(os.path.join('.',DUMP_DIR,'{}_{}_{}_mxadv.npy' .format(victim,setup["target"],j)),img)
                     np.save(os.path.join('.',DUMP_DIR,'{}_{}_{}_orig.npy' .format(victim,setup["target"],j)),attacked_data[j*BATCH_SIZE:(j+1)*BATCH_SIZE])#dump originial example for comparison
         #joblib.dump(dist_list,os.path.join('.',DUMP_DIR,'dist_{}.z' .format(setup["target"])))#log distance information for performation evaluation
-        save_results(setup["save_file"], results.combine(setups))
+        save_results(setup["save_file"], results+setups)
         return results
 
 
