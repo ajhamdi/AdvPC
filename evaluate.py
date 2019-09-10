@@ -31,28 +31,28 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
     proj_pts = models["ae"].reconstruct(orig_pts)[0]
     # rec_pts = setup["ae"].reconstruct(adv_pts)[0]
     nat_rec_pts = models["ae"].reconstruct(nat_pts)[0]
-    orig_acc = list(evaluate_ptc(orig_pts,models["PN1"],models["PN1_PATH"],verbose=False))
-    adv_acc = list(evaluate_ptc(nat_pts,models["PN1"],models["PN1_PATH"],verbose=False))
-    proj_acc = list(evaluate_ptc(proj_pts,models["PN1"],models["PN1_PATH"],verbose=False))
-    rec_acc = list(evaluate_ptc(nat_rec_pts,models["PN1"],models["PN1_PATH"],verbose=False))
+    orig_acc = list(evaluate_ptc(orig_pts,models["PN1"],models["PN_PATH"],verbose=False))
+    adv_acc = list(evaluate_ptc(nat_pts,models["PN1"],models["PN_PATH"],verbose=False))
+    proj_acc = list(evaluate_ptc(proj_pts,models["PN1"],models["PN_PATH"],verbose=False))
+    rec_acc = list(evaluate_ptc(nat_rec_pts,models["PN1"],models["PN_PATH"],verbose=False))
 
     orig_acc_p = list(evaluate_ptc(orig_pts,models["PN2"],models["PN2_PATH"],verbose=False))
     adv_acc_p = list(evaluate_ptc(nat_pts,models["PN2"],models["PN2_PATH"],verbose=False))
     proj_acc_p = list(evaluate_ptc(proj_pts,models["PN2"],models["PN2_PATH"],verbose=False))
     rec_acc_p = list(evaluate_ptc(nat_rec_pts,models["PN2"],models["PN2_PATH"],verbose=False))
 
-    # b_adv_acc = list(evaluate_ptc(adv_pts,models["PN1"],models["PN1_PATH"],verbose=False))
-    #  b_rec_acc = list(evaluate_ptc(rec_pts,models["PN1"],models["PN1_PATH"],verbose=False))
+    # b_adv_acc = list(evaluate_ptc(adv_pts,models["PN1"],models["PN_PATH"],verbose=False))
+    #  b_rec_acc = list(evaluate_ptc(rec_pts,models["PN1"],models["PN_PATH"],verbose=False))
     # b_adv_acc_p = list(evaluate_ptc(adv_pts,models["PN2"],models["PN2_PATH"],verbose=False))
     #  b_rec_acc_p = list(evaluate_ptc(rec_pts,models["PN2"],models["PN2_PATH"],verbose=False))
 
     orig_acc_r = list(evaluate_ptc(SRS(orig_pts,setup["srs"]),models["test"],models["test_path"],verbose=False))
     adv_acc_r = list(evaluate_ptc(SRS(nat_pts, setup["srs"]), models["test"], models["test_path"], verbose=False))
-    # b_adv_acc_r = list(evaluate_ptc(SRS(adv_pts),models["PN1"],models["PN1_PATH"],verbose=False))
+    # b_adv_acc_r = list(evaluate_ptc(SRS(adv_pts),models["PN1"],models["PN_PATH"],verbose=False))
     
     orig_acc_o = list(evaluate_ptc(SOR(orig_pts, setup["sor"]), models["test"], models["test_path"], verbose=False))
     adv_acc_o = list(evaluate_ptc(SOR(nat_pts, setup["sor"]), models["test"], models["test_path"], verbose=False))
-    # b_adv_acc_o = list(evaluate_ptc(SOR(adv_pts),models["PN1"],models["PN1_PATH"],verbose=False))
+    # b_adv_acc_o = list(evaluate_ptc(SOR(adv_pts),models["PN1"],models["PN_PATH"],verbose=False))
 
     accuracies = {
         "orig_acc": orig_acc,
@@ -132,12 +132,12 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
 def evaluate(setup, results,targets_list, victims_list):
     models = {}
     pn2_dir = os.path.join(BASE_DIR, "..", "pointnet2")
-    PN1_PATH = os.path.join(BASE_DIR, "log","PN1", "model.ckpt")
+    PN_PATH = os.path.join(BASE_DIR, "log","PN1", "model.ckpt")
     PN2_PATH = os.path.join(pn2_dir, "log", "model.ckpt")
     PN1 = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
     PN2 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls.py")
     nb_of_attacks = len(results.values()[0]) 
-    models["PN1_PATH"] = PN1_PATH
+    models["PN_PATH"] = PN_PATH
     models["PN2_PATH"] = PN2_PATH
     models["PN1"] = PN1
     models["PN2"] = PN2
@@ -249,7 +249,7 @@ def evaluate(setup, results,targets_list, victims_list):
     norms_names = ["natural_L_cham_norm_orig"]
     ev_results = ListDict(accuracies_names+norms_names)
     setups = ListDict(setup.keys())
-    save_results(setup["results_file"],ev_results+setups)
+    save_results(setup["results_file"],ev_results.combine(setups))
     for target in targets_list:
         setup["target"] = target
         for victim in victims_list:
@@ -261,7 +261,7 @@ def evaluate(setup, results,targets_list, victims_list):
                 [setups.append(setup) for ii in range(setup["batch_size"])]
                 ev_results.partial_extend(
                     ListDict(norms)).partial_extend(ListDict(predictions))
-                save_results(setup["results_file"],ev_results + setups)
+                save_results(setup["results_file"], ev_results.combine(setups))
 
-    save_results(setup["results_file"],ev_results+setups+results)
+    save_results(setup["results_file"], ev_results.combine(setups).combine(results))
     return ev_results 

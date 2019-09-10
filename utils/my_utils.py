@@ -83,10 +83,9 @@ class ListDict(object):
         if isinstance(keylist_or_dict, list):
             self.listdict = {k: [] for k in keylist_or_dict}
         elif isinstance(keylist_or_dict, dict):
-            if not isinstance(keylist_or_dict.values()[0],list):
-                self.listdict = {k: [v] for k, v in keylist_or_dict.items()}
-            else:
-                 self.listdict = keylist_or_dict
+            self.listdict = {k: [v] for k, v in keylist_or_dict.items()}
+        elif isinstance(keylist_or_dict, ListDict):
+            self.listdict = keylist_or_dict
         elif not keylist_or_dict:
             self.listdict = {}
         else:
@@ -124,8 +123,7 @@ class ListDict(object):
         return ListDict(merge_two_dicts(self.raw_dict(), newlistdict.raw_dict()))
 
     def combine(self, newlistdict):
-        self.listdict = merge_two_dicts(self.raw_dict(), newlistdict.raw_dict())
-        return self
+        return ListDict(merge_two_dicts(self.raw_dict(), newlistdict.raw_dict()))
         # self.listdict = {**self.raw_dict(), **newlistdict.raw_dict()}
 
     def __sub__(self, newlistdict):

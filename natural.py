@@ -36,7 +36,7 @@ parser.add_argument('--phase', type=str, default='attack', choices=['attack', 'e
 parser.add_argument('--exp_id', type=str, default='random',help='pick ')
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 # parser.add_argument('--model', default='pointnet_cls_w_ae', help='Model name: pointnet_cls or pointnet_cls_basic [default: pointnet_cls]')
-parser.add_argument('--network', default='PN1', choices=['PN1', 'PN2', 'PN3',"GCN"], 
+parser.add_argument('--network', default='PN', choices=['PN', 'PN1', 'PN2',"GCN"], 
     help='the network used to perform the attack , PN1: POintNet , PN2 : POinNEt ++ , PN3: POneNet++ w/ 2 scales , GCN : DCGCN network   ')
 # parser.add_argument('--log_dir', default='log', help='Log dir [default: log]')
 parser.add_argument('--batch_size', type=int, default=5, help='Batch Size for attack [default: 5]')
@@ -381,7 +381,7 @@ def attack(setup,targets_list,victims_list):
         # the class index of selected 10 largest classed in ModelNet40
         results = ListDict(norms_names)
         setups = ListDict(setup.keys())
-        save_results(setup["save_file"], results+setups)
+        save_results(setup["save_file"], results.combine(setups))
         for target in targets_list:
             setup["target"] = target
             for victim in victims_list:
@@ -396,11 +396,11 @@ def attack(setup,targets_list,victims_list):
                     [setups.append(setup) for ii in range(setup["batch_size"])]
                     results.extend(ListDict(norms))
                     # compiled_results.chek_error()
-                    save_results(setup["save_file"], results+setups)
+                    save_results(setup["save_file"], results.combine(setups))
                     # np.save(os.path.join('.',DUMP_DIR,'{}_{}_{}_mxadv.npy' .format(victim,setup["target"],j)),img)
                     np.save(os.path.join('.',DUMP_DIR,'{}_{}_{}_orig.npy' .format(victim,setup["target"],j)),attacked_data[j*BATCH_SIZE:(j+1)*BATCH_SIZE])#dump originial example for comparison
         #joblib.dump(dist_list,os.path.join('.',DUMP_DIR,'dist_{}.z' .format(setup["target"])))#log distance information for performation evaluation
-        save_results(setup["save_file"], results+setups)
+        save_results(setup["save_file"], results.combine(setups))
         return results
 
 
@@ -441,7 +441,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
     o_bestcham = [1e10] * BATCH_SIZE
     o_bestemd = [1e10] * BATCH_SIZE
     o_bestscore = [-1] * BATCH_SIZE
-    o_bestattack = np.ones(shape=(BATCH_SIZE,NUM_POINT,3))
+    o_bestattack = setup["u_infty"] * np.ones(shape=(BATCH_SIZE,NUM_POINT,3))
 
     feed_dict = {ops['pointclouds_pl']: attacked_data,
          ops['is_training_pl']: is_training,
@@ -662,6 +662,7 @@ if __name__=='__main__':
     setup = vars(FLAGS)
     victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     # victims_list = [0]
+    # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     targets_list = [5,0,35]
     setups_file = os.path.join(setup["dump_dir"],"..", "setups.csv")
     load_file = os.path.join(setup["dump_dir"],setup["exp_id"] +".csv")
