@@ -441,7 +441,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
     o_bestcham = [1e10] * BATCH_SIZE
     o_bestemd = [1e10] * BATCH_SIZE
     o_bestscore = [-1] * BATCH_SIZE
-    o_bestattack = setup["u_infty"] * np.ones(shape=(BATCH_SIZE,NUM_POINT,3))
+    o_bestattack = attacked_data
 
     feed_dict = {ops['pointclouds_pl']: attacked_data,
          ops['is_training_pl']: is_training,
