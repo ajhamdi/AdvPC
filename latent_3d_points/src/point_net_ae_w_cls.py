@@ -58,9 +58,11 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
             self.pert = tf.get_variable(name='pert', shape=[
                                         c.batch_size, c.n_input[0], 3], initializer=tf.truncated_normal_initializer(stddev=0.01))
             if c.hard_bound_mode == 1:
+                print("bound L infty")
                 self.pert_ = tf_util.tf_norm_projection(self.pert, norm=c.u_infty, norm_type="linfty")
                 # self.pert_ = tf.clip_by_value(self.pert, clip_value_min=-c.u_infty, clip_value_max=c.u_infty)
             elif c.hard_bound_mode == 2:
+                print("bound L 2")
                 self.pert_ = tf_util.tf_norm_projection(
                     self.pert, norm=c.u_two, norm_type="l2")
             else:
