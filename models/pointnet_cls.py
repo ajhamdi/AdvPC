@@ -9,6 +9,9 @@ sys.path.append(BASE_DIR)
 sys.path.append(os.path.join(BASE_DIR, '../utils'))
 tf_util = imp.load_source(
     'tf_util', os.path.join(BASE_DIR, '../utils', "tf_util.py"))
+
+transform_nets = imp.load_source(
+    'transform_nets', os.path.join(BASE_DIR,  "transform_nets.py"))
 # import tf_nndistance   ############################################################# HERER UNCOMMENT
 from transform_nets import input_transform_net, feature_transform_net
 

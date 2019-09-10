@@ -41,6 +41,15 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
     proj_acc_pp = list(evaluate_ptc(proj_pts,models["PN2"],models["PN2_PATH"],verbose=False))
     rec_acc_pp = list(evaluate_ptc(nat_rec_ppts,models["PN2"],models["PN2_PATH"],verbose=False))
 
+    orig_acc_p = list(evaluate_ptc(orig_pts,models["PN1"],models["PN1_PATH"],verbose=False))
+    adv_acc_p = list(evaluate_ptc(nat_pts,models["PN1"],models["PN1_PATH"],verbose=False))
+    proj_acc_p = list(evaluate_ptc(proj_pts,models["PN1"],models["PN1_PATH"],verbose=False))
+    rec_acc_p = list(evaluate_ptc(nat_rec_ppts,models["PN1"],models["PN1_PATH"],verbose=False))
+
+    orig_acc_gcn = list(evaluate_ptc(orig_pts,models["GCN"],models["GCN_PATH"],verbose=False))
+    adv_acc_gcn = list(evaluate_ptc(nat_pts,models["GCN"],models["GCN_PATH"],verbose=False))
+    proj_acc_gcn = list(evaluate_ptc(proj_pts,models["GCN"],models["GCN_PATH"],verbose=False))
+    rec_acc_gcn = list(evaluate_ptc(nat_rec_ppts,models["GCN"],models["GCN_PATH"],verbose=False))
     # b_adv_acc = list(evaluate_ptc(adv_pts,models["PN"],models["PN_PATH"],verbose=False))
     #  b_rec_acc = list(evaluate_ptc(rec_ppts,models["PN"],models["PN_PATH"],verbose=False))
     # b_adv_acc_pp = list(evaluate_ptc(adv_pts,models["PN2"],models["PN2_PATH"],verbose=False))
@@ -56,35 +65,25 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
 
     accuracies = {
         "orig_acc": orig_acc,
-        # "adv_suc": adv_suc,
         "adv_acc": adv_acc,
         "proj_acc": proj_acc,
-        # "rec_suc": rec_suc,
         "rec_acc": rec_acc,
         "orig_acc_pp": orig_acc_pp,
-        # "adv_suc_pp": adv_suc_pp,
+        "orig_acc_gcn": orig_acc_gcn,
+        "orig_acc_p": orig_acc_p,
         "adv_acc_pp": adv_acc_pp,
+        "adv_acc_gcn": adv_acc_gcn,
+        "adv_acc_p": adv_acc_p,
         "proj_acc_pp": proj_acc_pp,
-        # "rec_suc_pp": rec_suc_pp,
+        "proj_acc_gcn": proj_acc_gcn,
+        "proj_acc_p": proj_acc_p,
         "rec_acc_pp": rec_acc_pp,
-        # "b_adv_suc": b_adv_suc,
-        # # "b_adv_acc": b_adv_acc,
-        # "b_rec_suc": b_rec_suc,
-        # "b_rec_acc": b_rec_acc,
-        # "b_adv_suc_pp": b_adv_suc_pp,
-        # # "b_adv_acc_pp": b_adv_acc_pp,
-        # "b_rec_suc_pp": b_rec_suc_pp,
-        # "b_rec_acc_pp": b_rec_acc_pp,
+        "rec_acc_gcn": rec_acc_gcn,
+        "rec_acc_p": rec_acc_p,
         "orig_acc_r": orig_acc_r,
-        # "adv_suc_r": adv_suc_r,
         "adv_acc_r": adv_acc_r,
-        # "b_adv_suc_r": b_adv_suc_r,
-        # # "b_adv_acc_r": b_adv_acc_r,
         "orig_acc_o": orig_acc_o,
-        # "adv_suc_o": adv_suc_o,
         "adv_acc_o": adv_acc_o
-        # "b_adv_suc_o": b_adv_suc_o,
-        # # "b_adv_acc_o": b_adv_acc_o}
         }
 
 
@@ -133,19 +132,24 @@ def evaluate(setup, results,targets_list, victims_list):
     models = {}
     pn1_dir = os.path.join(BASE_DIR, "..", "pointnet2")
     pn2_dir = os.path.join(BASE_DIR, "..", "pointnet2")
+    gcn_dir = os.path.join(BASE_DIR, "..", "dgcnn","tensorflow")
     PN = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
-    PN1 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls_2scales")
+    PN1 = os.path.join(pn1_dir, 'models', "pointnet2_ssg_cls_2scales.py")
     PN2 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls.py")
+    GCN = os.path.join(gcn_dir, 'models', "dgcnn.py")
     PN_PATH = os.path.join(BASE_DIR, "log", "PN", "model.ckpt")
     PN1_PATH = os.path.join(BASE_DIR, "log", "PN1", "model.ckpt")
     PN2_PATH = os.path.join(BASE_DIR, "log", "PN2", "model.ckpt")
+    GCN_PATH = os.path.join(BASE_DIR, "log", "GCN", "model.ckpt")
     nb_of_attacks = len(results.values()[0]) 
     models["PN_PATH"] = PN_PATH
     models["PN1_PATH"] = PN1_PATH
     models["PN2_PATH"] = PN2_PATH
+    models["GCN_PATH"] = GCN_PATH
     models["PN"] = PN
     models["PN1"] = PN1
     models["PN2"] = PN2
+    models["GCN"] = GCN
     models["test"] = models[setup["network"]]
     models["test_path"] = models[setup["network"]+"_PATH"]
     top_out_dir = osp.join(BASE_DIR, "latent_3d_points", "data")
@@ -223,19 +227,39 @@ def evaluate(setup, results,targets_list, victims_list):
         "rec_suc": "defended natural adverserial sucess rate on PointNet ",
         "rec_acc": "reconstructed defense accuracy on PointNet ",
         "orig_acc_pp": "original accuracy on PointNet_++ ",
+        "orig_acc_gcn": "original accuracy on DGCN",
+        "orig_acc_p": "original accuracy on PointNet_+ ",
         "adv_suc_pp": "natural adverserial sucess rate on PointNet_++ ",
+        "adv_suc_gcn": "natural adverserial sucess rate on DGCN",
+        "adv_suc_p": "natural adverserial sucess rate on PointNet_+ ",
         "adv_acc_pp": "natural adverserial accuracy on PointNet_++ ",
+        "adv_acc_gcn": "natural adverserial accuracy on DGCN",
+        "adv_acc_p": "natural adverserial accuracy on PointNet_+ ",
         "proj_acc_pp": "projected accuracy on PointNet_++ ",
+        "proj_acc_gcn": "projected accuracy on DGCN",
+        "proj_acc_p": "projected accuracy on PointNet_+ ",
         "rec_suc_pp": "defended natural adverserial sucess rate on PointNet_++ ",
+        "rec_suc_gcn": "defended natural adverserial sucess rate on DGCN",
+        "rec_suc_p": "defended natural adverserial sucess rate on PointNet_+ ",
         "rec_acc_pp": "reconstructed defense accuracy on PointNet_++ ",
+        "rec_acc_gcn": "reconstructed defense accuracy on DGCN",
+        "rec_acc_p": "reconstructed defense accuracy on PointNet_+ ",
         "b_adv_suc": "baseline adverserial sucess rate on PointNet ",
         "b_adv_acc": "baseline adverserial accuracy on PointNet ",
         "b_rec_suc": "baseline defended natural adverserial sucess rate on PointNet ",
         "b_rec_acc": "baselin ereconstructed defense accuracy on PointNet ",
         "b_adv_suc_pp": "baseline adverserial sucess rate on PointNet_++ ",
+        "b_adv_suc_gcn": "baseline adverserial sucess rate on DGCN",
+        "b_adv_suc_p": "baseline adverserial sucess rate on PointNet_+ ",
         "b_adv_acc_pp": "baseline adverserial accuracy on PointNet_++ ",
+        "b_adv_acc_gcn": "baseline adverserial accuracy on DGCN",
+        "b_adv_acc_p": "baseline adverserial accuracy on PointNet_+ ",
         "b_rec_suc_pp": "baseline defended natural adverserial sucess rate on PointNet_++ ",
+        "b_rec_suc_gcn": "baseline defended natural adverserial sucess rate on DGCN",
+        "b_rec_suc_p": "baseline defended natural adverserial sucess rate on PointNet_+ ",
         "b_rec_acc_pp": "baselin ereconstructed defense accuracy on PointNet_++ ",
+        "b_rec_acc_gcn": "baselin ereconstructed defense accuracy on DGCN",
+        "b_rec_acc_p": "baselin ereconstructed defense accuracy on PointNet_+ ",
         "orig_acc_r": "original accuracy under Random defense",
         "adv_suc_r": "natural adverserial accuracy under Random defense",
         "adv_acc_r": "natural adverserial sucess rate under Random defense",
@@ -247,14 +271,15 @@ def evaluate(setup, results,targets_list, victims_list):
         "b_adv_suc_o": "baseline  adverserial accuracy under Outlier defense",
         "b_adv_acc_o": "baseline  adverserial sucess rate under Outlier defense"}
 
-    accuracies_names  = [
-        "orig_acc","adv_acc","proj_acc","rec_acc","orig_acc_pp",
-        "adv_acc_pp","proj_acc_pp","rec_acc_pp","orig_acc_r",
-        "adv_acc_r","orig_acc_o","adv_acc_o"]
+    # accuracies_names  = [
+    #     "orig_acc", "adv_acc", "proj_acc", "rec_acc", "orig_acc_pp", , "orig_acc_p"
+    #     "adv_acc_pp", "proj_acc_pp", "rec_acc_pp", "adv_acc_p", "proj_acc_p", "rec_acc_p""orig_acc_r",
+    #     "adv_acc_r","orig_acc_o","adv_acc_o"]
     norms_names = ["natural_L_cham_norm_orig"]
-    ev_results = ListDict(accuracies_names+norms_names)
+    ev_results = ListDict(accuracies_disc.keys()+norms_names)
+    # norms_results = ListDict(norms_names)
     setups = ListDict(setup.keys())
-    save_results(setup["results_file"],ev_results.combine(setups))
+    save_results(setup["results_file"], ev_results+ setups)
     for target in targets_list:
         setup["target"] = target
         for victim in victims_list:
@@ -264,9 +289,12 @@ def evaluate(setup, results,targets_list, victims_list):
             for batch_indx in range(int(setup["batch_size"])):
                 predictions, norms = evaluate_all_shapes_scale(batch_indx=batch_indx, setup=setup,models=models)
                 [setups.append(setup) for ii in range(setup["batch_size"])]
+                # norms_results.remove(norms_results - ListDict(norms))
+                # norms_results.partial_extend(ListDict(norms))
+                ev_results.remove(ev_results - ListDict(predictions) - ListDict(norms))
                 ev_results.partial_extend(
-                    ListDict(norms)).partial_extend(ListDict(predictions))
-                save_results(setup["results_file"], ev_results.combine(setups))
+                    ListDict(predictions)).partial_extend(ListDict(norms))
+                save_results(setup["results_file"], ev_results+setups)
 
-    save_results(setup["results_file"], ev_results.combine(setups).combine(results))
+    save_results(setup["results_file"], ev_results +setups+results)
     return ev_results 

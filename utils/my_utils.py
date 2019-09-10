@@ -4,6 +4,8 @@ import numpy as np
 import pptk 
 import glob
 import pandas as pd
+import copy
+
 
 def gif_folder(data_dir, extension="jpg",duration=None):
     image_collection = []
@@ -83,9 +85,12 @@ class ListDict(object):
         if isinstance(keylist_or_dict, list):
             self.listdict = {k: [] for k in keylist_or_dict}
         elif isinstance(keylist_or_dict, dict):
-            self.listdict = {k: [v] for k, v in keylist_or_dict.items()}
+            if isinstance(keylist_or_dict.values()[0], list):
+                self.listdict = copy.deepcopy(keylist_or_dict)
+            else :
+                self.listdict = {k: [v] for k, v in keylist_or_dict.items()}
         elif isinstance(keylist_or_dict, ListDict):
-            self.listdict = keylist_or_dict
+            self.listdict = copy.deepcopy(keylist_or_dict)
         elif not keylist_or_dict:
             self.listdict = {}
         else:
@@ -123,17 +128,18 @@ class ListDict(object):
         return ListDict(merge_two_dicts(self.raw_dict(), newlistdict.raw_dict()))
 
     def combine(self, newlistdict):
-        return ListDict(merge_two_dicts(self.raw_dict(), newlistdict.raw_dict()))
+        self.listdict = merge_two_dicts(self.raw_dict(), newlistdict.raw_dict())
         # self.listdict = {**self.raw_dict(), **newlistdict.raw_dict()}
+        return self
 
     def __sub__(self, newlistdict):
         new_dict = ListDict(self.raw_dict())
-        for k, v in newlistdict.raw_dict().items():
+        for k in newlistdict.raw_dict().keys():
             new_dict.raw_dict().pop(k, None)
         return new_dict
     
     def remove(self, newlistdict):
-        for k, v in newlistdict.raw_dict().items():
+        for k in newlistdict.raw_dict().keys():
             self.listdict.pop(k, None)
         return self
 

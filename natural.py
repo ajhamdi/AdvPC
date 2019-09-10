@@ -103,11 +103,11 @@ NUM_POINT = FLAGS.num_point
 GPU_INDEX = FLAGS.gpu
 MODEL_PATH = os.path.join("log", FLAGS.network, "model.ckpt")
 
-if FLAGS.network == "PN1":
+if FLAGS.network == "PN":
     model = "pointnet_cls_w_ae"
 elif FLAGS.network == "PN2":
     model = "pointnet_cls_w_ae_pp"
-elif FLAGS.network == "PN3":
+elif FLAGS.network == "PN1":
     model = "pointnet_cls_w_ae_p"
 else :
     model = "gcn_cls_w_ae"
@@ -381,7 +381,7 @@ def attack(setup,targets_list,victims_list):
         # the class index of selected 10 largest classed in ModelNet40
         results = ListDict(norms_names)
         setups = ListDict(setup.keys())
-        save_results(setup["save_file"], results.combine(setups))
+        save_results(setup["save_file"], results+setups)
         for target in targets_list:
             setup["target"] = target
             for victim in victims_list:
@@ -396,11 +396,11 @@ def attack(setup,targets_list,victims_list):
                     [setups.append(setup) for ii in range(setup["batch_size"])]
                     results.extend(ListDict(norms))
                     # compiled_results.chek_error()
-                    save_results(setup["save_file"], results.combine(setups))
+                    save_results(setup["save_file"], results+setups)
                     # np.save(os.path.join('.',DUMP_DIR,'{}_{}_{}_mxadv.npy' .format(victim,setup["target"],j)),img)
                     np.save(os.path.join('.',DUMP_DIR,'{}_{}_{}_orig.npy' .format(victim,setup["target"],j)),attacked_data[j*BATCH_SIZE:(j+1)*BATCH_SIZE])#dump originial example for comparison
         #joblib.dump(dist_list,os.path.join('.',DUMP_DIR,'dist_{}.z' .format(setup["target"])))#log distance information for performation evaluation
-        save_results(setup["save_file"], results.combine(setups))
+        save_results(setup["save_file"], results+setups)
         return results
 
 
@@ -660,10 +660,11 @@ def attack_one_batch(sess, ops, attacked_data, victim):
 
 if __name__=='__main__':
     setup = vars(FLAGS)
-    victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    # victims_list = [0]
+    # victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
+    victims_list = [0]
     # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    targets_list = [5,0,35]
+    targets_list = [5]
+    # targets_list = [5,0,35]
     setups_file = os.path.join(setup["dump_dir"],"..", "setups.csv")
     load_file = os.path.join(setup["dump_dir"],setup["exp_id"] +".csv")
     setup["results_file"] = os.path.join(setup["dump_dir"], "" +setup["exp_id"]+"_full.csv")
