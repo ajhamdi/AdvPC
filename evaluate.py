@@ -29,30 +29,30 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
     nat_pts = np.load(os.path.join(setup["dump_dir"], "{}_{}_{}_adv.npy".format(setup["victim"],setup["target"], batch_indx)))
     # adv_pts = orig_pts + np.random.uniform(high=LIMIT , low=-LIMIT , size=(5,POINT_CLOUD_SIZE,3)) ##########################
     proj_pts = models["ae"].reconstruct(orig_pts)[0]
-    # rec_pts = setup["ae"].reconstruct(adv_pts)[0]
-    nat_rec_pts = models["ae"].reconstruct(nat_pts)[0]
-    orig_acc = list(evaluate_ptc(orig_pts,models["PN1"],models["PN_PATH"],verbose=False))
-    adv_acc = list(evaluate_ptc(nat_pts,models["PN1"],models["PN_PATH"],verbose=False))
-    proj_acc = list(evaluate_ptc(proj_pts,models["PN1"],models["PN_PATH"],verbose=False))
-    rec_acc = list(evaluate_ptc(nat_rec_pts,models["PN1"],models["PN_PATH"],verbose=False))
+    # rec_ppts = setup["ae"].reconstruct(adv_pts)[0]
+    nat_rec_ppts = models["ae"].reconstruct(nat_pts)[0]
+    orig_acc = list(evaluate_ptc(orig_pts,models["PN"],models["PN_PATH"],verbose=False))
+    adv_acc = list(evaluate_ptc(nat_pts,models["PN"],models["PN_PATH"],verbose=False))
+    proj_acc = list(evaluate_ptc(proj_pts,models["PN"],models["PN_PATH"],verbose=False))
+    rec_acc = list(evaluate_ptc(nat_rec_ppts,models["PN"],models["PN_PATH"],verbose=False))
 
-    orig_acc_p = list(evaluate_ptc(orig_pts,models["PN2"],models["PN2_PATH"],verbose=False))
-    adv_acc_p = list(evaluate_ptc(nat_pts,models["PN2"],models["PN2_PATH"],verbose=False))
-    proj_acc_p = list(evaluate_ptc(proj_pts,models["PN2"],models["PN2_PATH"],verbose=False))
-    rec_acc_p = list(evaluate_ptc(nat_rec_pts,models["PN2"],models["PN2_PATH"],verbose=False))
+    orig_acc_pp = list(evaluate_ptc(orig_pts,models["PN2"],models["PN2_PATH"],verbose=False))
+    adv_acc_pp = list(evaluate_ptc(nat_pts,models["PN2"],models["PN2_PATH"],verbose=False))
+    proj_acc_pp = list(evaluate_ptc(proj_pts,models["PN2"],models["PN2_PATH"],verbose=False))
+    rec_acc_pp = list(evaluate_ptc(nat_rec_ppts,models["PN2"],models["PN2_PATH"],verbose=False))
 
-    # b_adv_acc = list(evaluate_ptc(adv_pts,models["PN1"],models["PN_PATH"],verbose=False))
-    #  b_rec_acc = list(evaluate_ptc(rec_pts,models["PN1"],models["PN_PATH"],verbose=False))
-    # b_adv_acc_p = list(evaluate_ptc(adv_pts,models["PN2"],models["PN2_PATH"],verbose=False))
-    #  b_rec_acc_p = list(evaluate_ptc(rec_pts,models["PN2"],models["PN2_PATH"],verbose=False))
+    # b_adv_acc = list(evaluate_ptc(adv_pts,models["PN"],models["PN_PATH"],verbose=False))
+    #  b_rec_acc = list(evaluate_ptc(rec_ppts,models["PN"],models["PN_PATH"],verbose=False))
+    # b_adv_acc_pp = list(evaluate_ptc(adv_pts,models["PN2"],models["PN2_PATH"],verbose=False))
+    #  b_rec_acc_pp = list(evaluate_ptc(rec_ppts,models["PN2"],models["PN2_PATH"],verbose=False))
 
     orig_acc_r = list(evaluate_ptc(SRS(orig_pts,setup["srs"]),models["test"],models["test_path"],verbose=False))
     adv_acc_r = list(evaluate_ptc(SRS(nat_pts, setup["srs"]), models["test"], models["test_path"], verbose=False))
-    # b_adv_acc_r = list(evaluate_ptc(SRS(adv_pts),models["PN1"],models["PN_PATH"],verbose=False))
+    # b_adv_acc_r = list(evaluate_ptc(SRS(adv_pts),models["PN"],models["PN_PATH"],verbose=False))
     
     orig_acc_o = list(evaluate_ptc(SOR(orig_pts, setup["sor"]), models["test"], models["test_path"], verbose=False))
     adv_acc_o = list(evaluate_ptc(SOR(nat_pts, setup["sor"]), models["test"], models["test_path"], verbose=False))
-    # b_adv_acc_o = list(evaluate_ptc(SOR(adv_pts),models["PN1"],models["PN_PATH"],verbose=False))
+    # b_adv_acc_o = list(evaluate_ptc(SOR(adv_pts),models["PN"],models["PN_PATH"],verbose=False))
 
     accuracies = {
         "orig_acc": orig_acc,
@@ -61,20 +61,20 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
         "proj_acc": proj_acc,
         # "rec_suc": rec_suc,
         "rec_acc": rec_acc,
-        "orig_acc_p": orig_acc_p,
-        # "adv_suc_p": adv_suc_p,
-        "adv_acc_p": adv_acc_p,
-        "proj_acc_p": proj_acc_p,
-        # "rec_suc_p": rec_suc_p,
-        "rec_acc_p": rec_acc_p,
+        "orig_acc_pp": orig_acc_pp,
+        # "adv_suc_pp": adv_suc_pp,
+        "adv_acc_pp": adv_acc_pp,
+        "proj_acc_pp": proj_acc_pp,
+        # "rec_suc_pp": rec_suc_pp,
+        "rec_acc_pp": rec_acc_pp,
         # "b_adv_suc": b_adv_suc,
         # # "b_adv_acc": b_adv_acc,
         # "b_rec_suc": b_rec_suc,
         # "b_rec_acc": b_rec_acc,
-        # "b_adv_suc_p": b_adv_suc_p,
-        # # "b_adv_acc_p": b_adv_acc_p,
-        # "b_rec_suc_p": b_rec_suc_p,
-        # "b_rec_acc_p": b_rec_acc_p,
+        # "b_adv_suc_pp": b_adv_suc_pp,
+        # # "b_adv_acc_pp": b_adv_acc_pp,
+        # "b_rec_suc_pp": b_rec_suc_pp,
+        # "b_rec_acc_pp": b_rec_acc_pp,
         "orig_acc_r": orig_acc_r,
         # "adv_suc_r": adv_suc_r,
         "adv_acc_r": adv_acc_r,
@@ -89,14 +89,14 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
 
 
     # natural_L_2_norm_orig =  np.linalg.norm(orig_pts-proj_pts,axis=(1,2))
-    # natural_L_2_norm_adv =  np.linalg.norm(rec_pts-adv_pts,axis=(1,2))
-    # natural_L_2_norm_nat =  np.linalg.norm(nat_rec_pts-nat_pts,axis=(1,2))
+    # natural_L_2_norm_adv =  np.linalg.norm(rec_ppts-adv_pts,axis=(1,2))
+    # natural_L_2_norm_nat =  np.linalg.norm(nat_rec_ppts-nat_pts,axis=(1,2))
     # natural_L_infty_norm_orig =  np.amax(np.abs(orig_pts-proj_pts),axis=(1,2))
-    # natural_L_infty_norm_adv =  np.amax(np.abs(rec_pts-adv_pts),axis=(1,2))
-    # natural_L_infty_norm_nat =  np.amax(np.abs(nat_rec_pts-nat_pts),axis=(1,2))
+    # natural_L_infty_norm_adv =  np.amax(np.abs(rec_ppts-adv_pts),axis=(1,2))
+    # natural_L_infty_norm_nat =  np.amax(np.abs(nat_rec_ppts-nat_pts),axis=(1,2))
     natural_L_cham_norm_orig =   list(1000*chamfer_distance(orig_pts,proj_pts))
-    # natural_L_cham_norm_adv =   chamfer_distance(adv_pts,rec_pts)
-    # natural_L_cham_norm_nat =   chamfer_distance(nat_pts,nat_rec_pts)
+    # natural_L_cham_norm_adv =   chamfer_distance(adv_pts,rec_ppts)
+    # natural_L_cham_norm_nat =   chamfer_distance(nat_pts,nat_rec_ppts)
     # L_2_norm_adv =  np.linalg.norm(orig_pts-adv_pts,axis=(1,2))
     # L_2_norm_nat =  np.linalg.norm(orig_pts-nat_pts,axis=(1,2))
     # L_infty_norm_adv =    np.amax(np.abs(orig_pts-adv_pts),axis=(1,2))
@@ -131,14 +131,19 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
 
 def evaluate(setup, results,targets_list, victims_list):
     models = {}
+    pn1_dir = os.path.join(BASE_DIR, "..", "pointnet2")
     pn2_dir = os.path.join(BASE_DIR, "..", "pointnet2")
-    PN_PATH = os.path.join(BASE_DIR, "log","PN1", "model.ckpt")
-    PN2_PATH = os.path.join(pn2_dir, "log", "model.ckpt")
-    PN1 = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
+    PN = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
+    PN1 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls_2scales")
     PN2 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls.py")
+    PN_PATH = os.path.join(BASE_DIR, "log", "PN", "model.ckpt")
+    PN1_PATH = os.path.join(BASE_DIR, "log", "PN1", "model.ckpt")
+    PN2_PATH = os.path.join(BASE_DIR, "log", "PN2", "model.ckpt")
     nb_of_attacks = len(results.values()[0]) 
     models["PN_PATH"] = PN_PATH
+    models["PN1_PATH"] = PN1_PATH
     models["PN2_PATH"] = PN2_PATH
+    models["PN"] = PN
     models["PN1"] = PN1
     models["PN2"] = PN2
     models["test"] = models[setup["network"]]
@@ -153,17 +158,17 @@ def evaluate(setup, results,targets_list, victims_list):
 
 
     experiment_name = 'single_class_ae'
-    n_pc_points = 1024  # 2048                # Number of points per model.
+    n_pc_ppoints = 1024  # 2048                # Number of points per model.
     bneck_size = 128                  # Bottleneck-AE size
     # Loss to optimize: 'emd' or 'chamfer'             # Bottleneck-AE size
     ae_loss = 'chamfer'
     train_params = default_train_params()
     encoder, decoder, enc_args, dec_args = mlp_architecture_ala_iclr_18(
-        n_pc_points, bneck_size)
+        n_pc_ppoints, bneck_size)
     train_dir = create_dir(osp.join(top_out_dir, experiment_name))
 
 
-    conf = Conf(n_input=[n_pc_points, 3],
+    conf = Conf(n_input=[n_pc_ppoints, 3],
                 loss=ae_loss,
                 training_epochs=train_params['training_epochs'],
                 batch_size=train_params['batch_size'],
@@ -217,20 +222,20 @@ def evaluate(setup, results,targets_list, victims_list):
         "proj_acc": "projected accuracy on PointNet ",
         "rec_suc": "defended natural adverserial sucess rate on PointNet ",
         "rec_acc": "reconstructed defense accuracy on PointNet ",
-        "orig_acc_p": "original accuracy on PointNet_++ ",
-        "adv_suc_p": "natural adverserial sucess rate on PointNet_++ ",
-        "adv_acc_p": "natural adverserial accuracy on PointNet_++ ",
-        "proj_acc_p": "projected accuracy on PointNet_++ ",
-        "rec_suc_p": "defended natural adverserial sucess rate on PointNet_++ ",
-        "rec_acc_p": "reconstructed defense accuracy on PointNet_++ ",
+        "orig_acc_pp": "original accuracy on PointNet_++ ",
+        "adv_suc_pp": "natural adverserial sucess rate on PointNet_++ ",
+        "adv_acc_pp": "natural adverserial accuracy on PointNet_++ ",
+        "proj_acc_pp": "projected accuracy on PointNet_++ ",
+        "rec_suc_pp": "defended natural adverserial sucess rate on PointNet_++ ",
+        "rec_acc_pp": "reconstructed defense accuracy on PointNet_++ ",
         "b_adv_suc": "baseline adverserial sucess rate on PointNet ",
         "b_adv_acc": "baseline adverserial accuracy on PointNet ",
         "b_rec_suc": "baseline defended natural adverserial sucess rate on PointNet ",
         "b_rec_acc": "baselin ereconstructed defense accuracy on PointNet ",
-        "b_adv_suc_p": "baseline adverserial sucess rate on PointNet_++ ",
-        "b_adv_acc_p": "baseline adverserial accuracy on PointNet_++ ",
-        "b_rec_suc_p": "baseline defended natural adverserial sucess rate on PointNet_++ ",
-        "b_rec_acc_p": "baselin ereconstructed defense accuracy on PointNet_++ ",
+        "b_adv_suc_pp": "baseline adverserial sucess rate on PointNet_++ ",
+        "b_adv_acc_pp": "baseline adverserial accuracy on PointNet_++ ",
+        "b_rec_suc_pp": "baseline defended natural adverserial sucess rate on PointNet_++ ",
+        "b_rec_acc_pp": "baselin ereconstructed defense accuracy on PointNet_++ ",
         "orig_acc_r": "original accuracy under Random defense",
         "adv_suc_r": "natural adverserial accuracy under Random defense",
         "adv_acc_r": "natural adverserial sucess rate under Random defense",
@@ -243,8 +248,8 @@ def evaluate(setup, results,targets_list, victims_list):
         "b_adv_acc_o": "baseline  adverserial sucess rate under Outlier defense"}
 
     accuracies_names  = [
-        "orig_acc","adv_acc","proj_acc","rec_acc","orig_acc_p",
-        "adv_acc_p","proj_acc_p","rec_acc_p","orig_acc_r",
+        "orig_acc","adv_acc","proj_acc","rec_acc","orig_acc_pp",
+        "adv_acc_pp","proj_acc_pp","rec_acc_pp","orig_acc_r",
         "adv_acc_r","orig_acc_o","adv_acc_o"]
     norms_names = ["natural_L_cham_norm_orig"]
     ev_results = ListDict(accuracies_names+norms_names)
