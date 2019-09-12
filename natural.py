@@ -713,10 +713,10 @@ if __name__=='__main__':
     setup = vars(FLAGS)
     models = {}
     initialize(setup, models)
-    # victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    victims_list = [0]
-    # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    targets_list = [5]
+    victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
+    # victims_list = [0]
+    targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
+    # targets_list = [5]
     # targets_list = [5,0,35]
 
 
