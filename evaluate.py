@@ -128,30 +128,8 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
     return accuracies, norms
 
 
-def evaluate(setup, results,targets_list, victims_list):
-    models = {}
-    pn1_dir = os.path.join(BASE_DIR, "..", "pointnet2")
-    pn2_dir = os.path.join(BASE_DIR, "..", "pointnet2")
-    gcn_dir = os.path.join(BASE_DIR, "..", "dgcnn","tensorflow")
-    PN = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
-    PN1 = os.path.join(pn1_dir, 'models', "pointnet2_ssg_cls_2scales.py")
-    PN2 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls.py")
-    GCN = os.path.join(gcn_dir, 'models', "dgcnn.py")
-    PN_PATH = os.path.join(BASE_DIR, "log", "PN", "model.ckpt")
-    PN1_PATH = os.path.join(BASE_DIR, "log", "PN1", "model.ckpt")
-    PN2_PATH = os.path.join(BASE_DIR, "log", "PN2", "model.ckpt")
-    GCN_PATH = os.path.join(BASE_DIR, "log", "GCN", "model.ckpt")
-    nb_of_attacks = len(results.values()[0]) 
-    models["PN_PATH"] = PN_PATH
-    models["PN1_PATH"] = PN1_PATH
-    models["PN2_PATH"] = PN2_PATH
-    models["GCN_PATH"] = GCN_PATH
-    models["PN"] = PN
-    models["PN1"] = PN1
-    models["PN2"] = PN2
-    models["GCN"] = GCN
-    models["test"] = models[setup["network"]]
-    models["test_path"] = models[setup["network"]+"_PATH"]
+def evaluate(setup, results,models,targets_list, victims_list):
+
     top_out_dir = osp.join(BASE_DIR, "latent_3d_points", "data")
     # print(BASE_DIR)
 

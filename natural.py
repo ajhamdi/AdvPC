@@ -6,6 +6,7 @@ import importlib
 import os
 import pandas as pd
 import sys
+import copy
 from collections import OrderedDict
 from scipy import stats
 from latent_3d_points.src.ae_templates import mlp_architecture_ala_iclr_18, default_train_params
@@ -101,17 +102,17 @@ FLAGS = parser.parse_args()
 BATCH_SIZE = FLAGS.batch_size
 NUM_POINT = FLAGS.num_point
 GPU_INDEX = FLAGS.gpu
-MODEL_PATH = os.path.join("log", FLAGS.network, "model.ckpt")
+# MODEL_PATH = os.path.join("log", FLAGS.network, "model.ckpt")
 
-if FLAGS.network == "PN":
-    model = "pointnet_cls_w_ae"
-elif FLAGS.network == "PN2":
-    model = "pointnet_cls_w_ae_pp"
-elif FLAGS.network == "PN1":
-    model = "pointnet_cls_w_ae_p"
-else :
-    model = "gcn_cls_w_ae"
-MODEL = importlib.import_module(model) # import network module
+# if FLAGS.network == "PN":
+#     model = "pointnet_cls_w_ae"
+# elif FLAGS.network == "PN2":
+#     model = "pointnet_cls_w_ae_pp"
+# elif FLAGS.network == "PN1":
+#     model = "pointnet_cls_w_ae_p"
+# else :
+#     model = "gcn_cls_w_ae"
+# MODEL = importlib.import_module(model) # import network module
 if FLAGS.exp_id == "random":
     EXP_ID = random_id()
     FLAGS.exp_id = EXP_ID
@@ -190,7 +191,7 @@ NUM_ITERATIONS=FLAGS.num_iter
 
 
 
-def attack(setup,targets_list,victims_list):
+def attack(setup,models,targets_list,victims_list):
     top_out_dir = osp.join(BASE_DIR, "latent_3d_points", "data")
 
 
@@ -247,6 +248,7 @@ def attack(setup,targets_list,victims_list):
             ae = PointNetAutoEncoderWithClassifier(conf.experiment_name, conf)
             ae.restore_model(conf.train_dir, epoch=restore_epoch, verbose=True)
             # pointclouds_pl, labels_pl = MODEL.placeholder_inputs(BATCH_SIZE, NUM_POINT)
+        ae.models = models
         is_training_pl = tf.placeholder(tf.bool, shape=())
         # is_projection = tf.placeholder(tf.bool, shape=())
 
@@ -256,12 +258,35 @@ def attack(setup,targets_list,victims_list):
         pointclouds_pl = ae.x
         pointclouds_input=ae.x_h
         # with tf.variable_scope(tf.get_variable_scope(), reuse=tf.AUTO_REUSE):
-        with tf.variable_scope(tf.get_variable_scope(), reuse=False):
-            early_pred, end_points = ae.get_model_w_ae(
-                pointclouds_input, is_training_pl)
-        with tf.variable_scope("QQ", reuse=False):
-            late_pred, end_points = ae.get_model_w_ae(ae.x_reconstr, is_training_pl)
-
+        if setup["network"] == "PN":
+            with tf.variable_scope(tf.get_variable_scope(), reuse=False):
+                early_pred, end_points = ae.get_model_w_ae(
+                    pointclouds_input, is_training_pl)
+            with tf.variable_scope("QQ", reuse=False):
+                late_pred, end_points = ae.get_model_w_ae(ae.x_reconstr, is_training_pl)
+        elif setup["network"] == "PN1":
+            with tf.variable_scope(tf.get_variable_scope(), reuse=False):
+                early_pred, end_points = ae.get_model_w_ae_p(
+                    pointclouds_input, is_training_pl)
+            with tf.variable_scope("QQ", reuse=False):
+                late_pred, end_points = ae.get_model_w_ae_p(
+                    ae.x_reconstr, is_training_pl)
+        elif setup["network"] == "PN2":
+            with tf.variable_scope(tf.get_variable_scope(), reuse=False):
+                early_pred, end_points = ae.get_model_w_ae_pp(
+                    pointclouds_input, is_training_pl)
+            with tf.variable_scope("QQ", reuse=False):
+                late_pred, end_points = ae.get_model_w_ae_pp(
+                    ae.x_reconstr, is_training_pl)
+        elif setup["network"] == "GCN":
+            with tf.variable_scope(tf.get_variable_scope(), reuse=False):
+                early_pred, end_points = ae.get_model_w_ae_gcn(
+                    pointclouds_input, is_training_pl)
+            with tf.variable_scope("QQ", reuse=False):
+                late_pred, end_points = ae.get_model_w_ae_gcn(
+                    ae.x_reconstr, is_training_pl)
+        else :
+            print("network not known")
 
         #adv loss
         early_adv_loss = ae.get_adv_loss(early_pred, target)
@@ -345,8 +370,8 @@ def attack(setup,targets_list,victims_list):
                "emd_weight": emd_weight,
                'pert': ae.pert,
                "dyn_target": dyn_target,
-               'pre_max':end_points['pre_max'],
-               'post_max':end_points['post_max'],
+            #    'pre_max':end_points['pre_max'],
+            #    'post_max':end_points['post_max'],
                'early_pred': early_pred,
                "late_pred": late_pred,
                'early_adv_loss': early_adv_loss,
@@ -368,8 +393,8 @@ def attack(setup,targets_list,victims_list):
         # print_tensors_in_checkpoint_file(
         #     file_name=MODEL_PATH, tensor_name='beta1_power', all_tensors=True)
         # saver.restore(sess, MODEL_PATH)
-        saver_1.restore(sess, MODEL_PATH)
-        saver_2.restore(sess, MODEL_PATH)
+        saver_1.restore(sess, models["test_path"])
+        saver_2.restore(sess, models["test_path"])
         print('model restored!')
 
         norms_names = ["L_2_norm_adv",
@@ -656,31 +681,57 @@ def attack_one_batch(sess, ops, attacked_data, victim):
     
     return best_norms,o_bestattack
 
-
+def initialize(setup,models):
+        setup["results_file"] = os.path.join(
+        setup["dump_dir"], "" + setup["exp_id"]+"_full.csv")
+        setup["save_file"] = os.path.join(setup["dump_dir"], setup["exp_id"]+".csv")
+        setup["setups_file"] = os.path.join(setup["dump_dir"], "..", "setups.csv")
+        setup["load_file"] = os.path.join(setup["dump_dir"],setup["exp_id"] +".csv")
+        pn1_dir = os.path.join(BASE_DIR, "..", "pointnet2")
+        pn2_dir = os.path.join(BASE_DIR, "..", "pointnet2")
+        gcn_dir = os.path.join(BASE_DIR, "..", "dgcnn", "tensorflow")
+        PN = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
+        PN1 = os.path.join(pn1_dir, 'models', "pointnet2_ssg_cls_2scales.py")
+        PN2 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls.py")
+        GCN = os.path.join(gcn_dir, 'models', "dgcnn.py")
+        PN_PATH = os.path.join(BASE_DIR, "log", "PN", "model.ckpt")
+        PN1_PATH = os.path.join(BASE_DIR, "log", "PN1", "model.ckpt")
+        PN2_PATH = os.path.join(BASE_DIR, "log", "PN2", "model.ckpt")
+        GCN_PATH = os.path.join(BASE_DIR, "log", "GCN", "model.ckpt")
+        models["PN_PATH"] = PN_PATH
+        models["PN1_PATH"] = PN1_PATH
+        models["PN2_PATH"] = PN2_PATH
+        models["GCN_PATH"] = GCN_PATH
+        models["PN"] = PN
+        models["PN1"] = PN1
+        models["PN2"] = PN2
+        models["GCN"] = GCN
+        models["test"] = copy.deepcopy(models[setup["network"]])
+        models["test_path"] = copy.deepcopy(models[setup["network"]+"_PATH"])
 
 if __name__=='__main__':
     setup = vars(FLAGS)
+    models = {}
+    initialize(setup, models)
     # victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     victims_list = [0]
     # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     targets_list = [5]
     # targets_list = [5,0,35]
-    setups_file = os.path.join(setup["dump_dir"],"..", "setups.csv")
-    load_file = os.path.join(setup["dump_dir"],setup["exp_id"] +".csv")
-    setup["results_file"] = os.path.join(setup["dump_dir"], "" +setup["exp_id"]+"_full.csv")
-    setup["save_file"] = os.path.join(setup["dump_dir"], setup["exp_id"]+".csv")
+
+
     
     if setup["phase"] == "attack":
-        log_setup(setup, setups_file)
-        results = attack(setup,targets_list,victims_list)
+        log_setup(setup, setup["setups_file"])
+        results = attack(setup,models,targets_list,victims_list)
     
     elif setup["phase"] == "evaluate":
-        results = load_results(load_file)
-        ev_results = evaluate(setup, results, targets_list, victims_list)
+        results = load_results(setup["load_file"])
+        ev_results = evaluate(setup, results,models, targets_list, victims_list)
     
     elif setup["phase"] == "all":
-        log_setup(setup, setups_file)
-        results = attack(setup, targets_list, victims_list)
-        ev_results = evaluate(setup, results, targets_list, victims_list)
+        log_setup(setup, setup["setups_file"])
+        results = attack(setup,models, targets_list, victims_list)
+        ev_results = evaluate(setup, results,models, targets_list, victims_list)
     else :
         print("unkown phase")

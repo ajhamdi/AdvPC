@@ -6,6 +6,7 @@ Created on January 26, 2017
 
 import sys
 import os
+import imp
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # print(20*"@", os.path.join(BASE_DIR))
@@ -47,7 +48,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
     def __init__(self, name, configuration, graph=None):
         c = configuration
         self.configuration = c
-
+        self.models = {}
         AutoEncoder.__init__(self, name, graph, configuration)
         # print(20*"#", c.hard_bound)
         with tf.variable_scope(name):
@@ -201,6 +202,164 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
         if gt_points is None:
             gt_points = in_points
         return self.sess.run(tf.gradients(self.loss, self.x), feed_dict={self.x: in_points, self.gt: gt_points})
+
+    def get_model_w_ae_gcn(self,point_cloud, is_training, bn_decay=None):
+        """ Classification PointNet, input is BxNx3, output Bx40 """
+        tf_util = imp.load_source('tf_util', os.path.join(os.path.dirname(self.models["test"]), '../utils', "tf_util.py"))
+        transform_nets = imp.load_source('transform_nets', os.path.join(os.path.dirname(self.models["test"]), "transform_nets.py"))
+        import tf_util
+        from transform_nets import input_transform_net
+        batch_size = self.configuration.batch_size
+        num_point = self.configuration.n_input[0]
+        end_points = {}
+        k = 20
+
+        adj_matrix = tf_util.pairwise_distance(point_cloud)
+        nn_idx = tf_util.knn(adj_matrix, k=k)
+        edge_feature = tf_util.get_edge_feature(point_cloud, nn_idx=nn_idx, k=k)
+        print(adj_matrix, nn_idx, edge_feature)  
+        with tf.variable_scope('transform_net1') as sc:
+            transform = input_transform_net(edge_feature, is_training, bn_decay, K=3)
+
+        point_cloud_transformed = tf.matmul(point_cloud, transform)
+        adj_matrix = tf_util.pairwise_distance(point_cloud_transformed)
+        nn_idx = tf_util.knn(adj_matrix, k=k)
+        edge_feature = tf_util.get_edge_feature(point_cloud_transformed, nn_idx=nn_idx, k=k)
+
+        net = tf_util.conv2d(edge_feature, 64, [1,1],
+                            padding='VALID', stride=[1,1],
+                            bn=True, is_training=is_training,
+                            scope='dgcnn1', bn_decay=bn_decay)
+        net = tf.reduce_max(net, axis=-2, keep_dims=True)
+        net1 = net
+
+        adj_matrix = tf_util.pairwise_distance(net)
+        nn_idx = tf_util.knn(adj_matrix, k=k)
+        edge_feature = tf_util.get_edge_feature(net, nn_idx=nn_idx, k=k)
+
+        net = tf_util.conv2d(edge_feature, 64, [1,1],
+                            padding='VALID', stride=[1,1],
+                            bn=True, is_training=is_training,
+                            scope='dgcnn2', bn_decay=bn_decay)
+        net = tf.reduce_max(net, axis=-2, keep_dims=True)
+        net2 = net
+        
+        adj_matrix = tf_util.pairwise_distance(net)
+        nn_idx = tf_util.knn(adj_matrix, k=k)
+        edge_feature = tf_util.get_edge_feature(net, nn_idx=nn_idx, k=k)  
+
+        net = tf_util.conv2d(edge_feature, 64, [1,1],
+                            padding='VALID', stride=[1,1],
+                            bn=True, is_training=is_training,
+                            scope='dgcnn3', bn_decay=bn_decay)
+        net = tf.reduce_max(net, axis=-2, keep_dims=True)
+        net3 = net
+
+        adj_matrix = tf_util.pairwise_distance(net)
+        nn_idx = tf_util.knn(adj_matrix, k=k)
+        edge_feature = tf_util.get_edge_feature(net, nn_idx=nn_idx, k=k)  
+        
+        net = tf_util.conv2d(edge_feature, 128, [1,1],
+                            padding='VALID', stride=[1,1],
+                            bn=True, is_training=is_training,
+                            scope='dgcnn4', bn_decay=bn_decay)
+        net = tf.reduce_max(net, axis=-2, keep_dims=True)
+        net4 = net
+
+        net = tf_util.conv2d(tf.concat([net1, net2, net3, net4], axis=-1), 1024, [1, 1], 
+                            padding='VALID', stride=[1,1],
+                            bn=True, is_training=is_training,
+                            scope='agg', bn_decay=bn_decay)
+        
+        net = tf.reduce_max(net, axis=1, keep_dims=True) 
+
+        # MLP on global point cloud vector
+        net = tf.reshape(net, [batch_size, -1]) 
+        net = tf_util.fully_connected(net, 512, bn=True, is_training=is_training,
+                                        scope='fc1', bn_decay=bn_decay)
+        net = tf_util.dropout(net, keep_prob=0.5, is_training=is_training,
+                                scope='dp1')
+        net = tf_util.fully_connected(net, 256, bn=True, is_training=is_training,
+                                        scope='fc2', bn_decay=bn_decay)
+        net = tf_util.dropout(net, keep_prob=0.5, is_training=is_training,
+                                scope='dp2')
+        net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
+
+        return net, end_points
+    
+    def get_model_w_ae_pp(self,point_cloud, is_training, bn_decay=None):
+        """" Classification PointNet, input is BxNx3, output Bx40 """
+        pointnet_util = imp.load_source('pointnet_util', os.path.join(
+            os.path.dirname(self.models["test"]), '../utils', "pointnet_util.py"))
+        tf_util = imp.load_source('tf_util', os.path.join(os.path.dirname(self.models["test"]), '../utils', "tf_util.py"))
+        from pointnet_util import pointnet_sa_module
+        batch_size = self.configuration.batch_size
+        num_point = self.configuration.n_input[0]
+        end_points = {}
+        l0_xyz = point_cloud
+        l0_points = None
+        end_points['l0_xyz'] = l0_xyz
+
+        # Set abstraction layers
+        # Note: When using NCHW for layer 2, we see increased GPU memory usage (in TF1.4).
+        # So we only use NCHW for layer 1 until this issue can be resolved.
+        l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=512, radius=0.2, nsample=32, mlp=[
+                                                        64, 64, 128], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, scope='layer1', use_nchw=True)
+        l2_xyz, l2_points, l2_indices = pointnet_sa_module(l1_xyz, l1_points, npoint=128, radius=0.4, nsample=64, mlp=[
+                                                        128, 128, 256], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, scope='layer2')
+        l3_xyz, l3_points, l3_indices = pointnet_sa_module(l2_xyz, l2_points, npoint=None, radius=None, nsample=None, mlp=[
+                                                        256, 512, 1024], mlp2=None, group_all=True, is_training=is_training, bn_decay=bn_decay, scope='layer3')
+
+        # Fully connected layers
+        net = tf.reshape(l3_points, [batch_size, -1])
+        net = tf_util.fully_connected(
+            net, 512, bn=True, is_training=is_training, scope='fc1', bn_decay=bn_decay)
+        net = tf_util.dropout(net, keep_prob=0.5,
+                            is_training=is_training, scope='dp1')
+        net = tf_util.fully_connected(
+            net, 256, bn=True, is_training=is_training, scope='fc2', bn_decay=bn_decay)
+        net = tf_util.dropout(net, keep_prob=0.5,
+                            is_training=is_training, scope='dp2')
+        net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
+
+        return net, end_points
+
+    def get_model_w_ae_p(self, point_cloud, is_training, bn_decay=None):
+        """" Classification PointNet, input is BxNx3, output Bx40 """
+        pointnet_util = imp.load_source('pointnet_util', os.path.join(os.path.dirname(self.models["test"]),'../utils', "pointnet_util.py"))
+        tf_util = imp.load_source('tf_util', os.path.join(
+            os.path.dirname(self.models["test"]), '../utils', "tf_util.py"))
+        from pointnet_util import pointnet_sa_module
+        batch_size = self.configuration.batch_size
+        num_point = self.configuration.n_input[0]
+        end_points = {}
+        l0_xyz = point_cloud
+        l0_points = None
+        end_points['l0_xyz'] = l0_xyz
+
+        # Set abstraction layers
+        # Note: When using NCHW for layer 2, we see increased GPU memory usage (in TF1.4).
+        # So we only use NCHW for layer 1 until this issue can be resolved.
+        # l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=512, radius=0.2, nsample=32, mlp=[
+        #     64, 64, 128], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, scope='layer1', use_nchw=True)
+        l2_xyz, l2_points, l2_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=128, radius=0.4, nsample=64, mlp=[
+                                                        128, 128, 256], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, scope='layer2')
+        l3_xyz, l3_points, l3_indices = pointnet_sa_module(l2_xyz, l2_points, npoint=None, radius=None, nsample=None, mlp=[
+                                                        256, 512, 1024], mlp2=None, group_all=True, is_training=is_training, bn_decay=bn_decay, scope='layer3')
+
+        # Fully connected layers
+        net = tf.reshape(l3_points, [batch_size, -1])
+        net = tf_util.fully_connected(
+            net, 512, bn=True, is_training=is_training, scope='fc1', bn_decay=bn_decay)
+        net = tf_util.dropout(net, keep_prob=0.5,
+                            is_training=is_training, scope='dp1')
+        net = tf_util.fully_connected(
+            net, 256, bn=True, is_training=is_training, scope='fc2', bn_decay=bn_decay)
+        net = tf_util.dropout(net, keep_prob=0.5,
+                            is_training=is_training, scope='dp2')
+        net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
+
+        return net, end_points
 
     def get_model_w_ae(self, input_x, is_training, reuse=False, bn_decay=None):
         """
