@@ -65,7 +65,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
             elif c.hard_bound_mode == 2:
                 print("bound L 2")
                 self.pert_ = tf_util.tf_norm_projection(
-                    self.pert, norm=c.u_two, norm_type="l2")
+                    self.pert, norm=self.bound_ball_two, norm_type="l2")
             else:
                 self.pert_ = self.pert
             if c.dyn_bound_mode == 1:
