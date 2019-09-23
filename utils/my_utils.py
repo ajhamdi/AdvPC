@@ -43,7 +43,7 @@ def play_ptc(viewer,save_dir=None,duration=0.001):
         viewer.record(save_dir, [(0, 0, 0, x, x/10.0, x) for x in range(1, 9)])
         viewer.close()
         gif_folder(save_dir, extension="png", duration=0.001)
-def random_id(digits_nb=3,include_letters=True,only_capital=True,unique_digits=False):
+def random_id(digits_nb=4,include_letters=True,only_capital=True,unique_digits=False):
     """
     generates random digits of length digits_nb and return the random string  . options include using letters or only numbers , unique or not uniqe digits, all capital letters or allow lowercase 
     
