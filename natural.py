@@ -458,9 +458,8 @@ def attack_one_batch(sess, ops, attacked_data, victim):
     u_two = np.ones(BATCH_SIZE) * U_TWO  # 0.362
 
 
-
-   
     o_bestdist = [1e10] * BATCH_SIZE
+    o_besttwo = [1e10] * BATCH_SIZE
     o_bestnat = [1e10] * BATCH_SIZE
     o_bestinfty = [1e10] * BATCH_SIZE
     o_bestcham = [1e10] * BATCH_SIZE
@@ -496,6 +495,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
         sess.run(tf.assign(ops['pert'],tf.truncated_normal([BATCH_SIZE,NUM_POINT,3], mean=0, stddev=0.0000001)))
 
         bestdist = [1e10] * BATCH_SIZE
+        besttwo = [1e10] * BATCH_SIZE
         bestnat = [1e10] * BATCH_SIZE
         bestinfty = [1e10] * BATCH_SIZE
 
@@ -533,10 +533,10 @@ def attack_one_batch(sess, ops, attacked_data, victim):
             #     # print("@@@@@@@@@@@@@@@@@@@@")
 
             # feed_dict[ops['dyn_target']] = c_target
-            # adv_loss_val,dist_val,pred_val,input_val,cur_pert = sess.run([ops['adv_loss'],
+            # adv_loss_val,dist_two,pred_val,input_val,cur_pert = sess.run([ops['adv_loss'],
             #                                                           ops['pert_norm'], ops['pred'], ops['pointclouds_input'], ops["pert"]], feed_dict=feed_dict)
             # pred_val = np.argmax(pred_val, 1)
-            # loss=adv_loss_val+np.average(dist_val*WEIGHT)
+            # loss=adv_loss_val+np.average(dist_two*WEIGHT)
             # cur_pert = sess.run(ops["pert"], feed_dict=feed_dict)
                         ###########################################################################################3
             # mid_val = sess.run(ops["x_m"], feed_dict=feed_dict)
@@ -547,9 +547,9 @@ def attack_one_batch(sess, ops, attacked_data, victim):
             # sess.run(tf.assign(ops['pert'], input_val - attacked_data))
 
 #########################################################################################
-            # adv_loss_val, dist_val, early_pred_val,late_pred_val, input_val, dist_nat = sess.run([ops['adv_loss'],
+            # adv_loss_val, dist_two, early_pred_val,late_pred_val, input_val, dist_nat = sess.run([ops['adv_loss'],
             #     ops['pert_norm'], ops['early_pred'], ops['late_pred'], ops['pointclouds_input'], ops['nat_norm']], feed_dict=feed_dict)
-            adv_loss_val , dist_val, early_pred_val, late_pred_val, input_val, dist_nat,dist_cham, dist_emd = sess.run([ops['adv_loss'],
+            adv_loss_val , dist_two, early_pred_val, late_pred_val, input_val, dist_nat,dist_cham, dist_emd = sess.run([ops['adv_loss'],
              ops['pert_norm'], ops['early_pred'], ops['late_pred'],
               ops['pointclouds_input'], ops['nat_norm'], ops["pert_cham"],
                ops["pert_emd"]], feed_dict=feed_dict)
@@ -560,7 +560,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
             late_pred_val = np.argmax(late_pred_val, 1)
             # print(20*"#", early_pred_val)
             loss = adv_loss_val + \
-                np.average(dist_val*WEIGHT) + \
+                np.average(dist_two*WEIGHT) + \
                 np.average(dist_nat*WEIGHT*ALPHA)
             dist_infty = np.amax(
                 np.abs(input_val - attacked_data), axis=(1, 2))
@@ -569,7 +569,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
                 print((" Iter {:3d} of {}: loss={:.2f} adv:{:.2f} " +
                        " TWO={:.3f} infty={:.3f} Cham={:.2f} NAT={:.2f} ")
                               .format(iteration, NUM_ITERATIONS,
-                                      loss, adv_loss_val, np.mean(dist_val), np.mean(dist_infty), np.mean(dist_cham), np.mean(dist_nat)))
+                                      loss, adv_loss_val, np.mean(dist_two), np.mean(dist_infty), np.mean(dist_cham), np.mean(dist_nat)))
             # check if we should abort search if we're getting nowhere.
             '''
             if ABORT_EARLY and iteration % ((MAX_ITERATIONS // 10) or 1) == 0:
@@ -581,41 +581,45 @@ def attack_one_batch(sess, ops, attacked_data, victim):
                 prev = loss
             '''
 
-            for e, (dist, pred, d_pred, ii, linfty,nat,cham,emd) in enumerate(zip(dist_val, early_pred_val, late_pred_val, input_val, dist_infty, dist_nat,dist_cham,dist_emd)):
-                # if nat < bestdist[e] and pred == setup["target"]:
-                if linfty < bestinfty[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001)) :
-                # if dist < bestdist[e] and pred == setup["target"] :
-                    # if emd < bestdist[e] and pred == setup["target"] and d_pred != victim:
-                    bestdist[e] = dist
+            for e, (two, pred, d_pred, ii, linfty,nat,cham,emd) in enumerate(zip(dist_two, early_pred_val, late_pred_val, input_val, dist_infty, dist_nat,dist_cham,dist_emd)):
+                dist = (two, linfty, two)[setup["dyn_bound_mode"]]  # according to the norm mode we picked we pick the best distance 
+                # if nat < besttwo[e] and pred == setup["target"]:
+                if dist < bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001)) :
+                # if two < besttwo[e] and pred == setup["target"] :
+                    # if emd < besttwo[e] and pred == setup["target"] and d_pred != victim:
+                    besttwo[e] = two
                     bestscore[e] = pred
                     bestnat[e] = nat
                     bestinfty[e] = linfty
+                    bestdist[e] = dist
 
-                # if nat < o_bestdist[e] and pred == setup["target"]:
-                if linfty < o_bestinfty[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001)):
-                    # if dist < o_bestdist[e] and pred == setup["target"] :
-                # if emd < o_bestdist[e] and pred == setup["target"] and d_pred != victim:
-                    o_bestdist[e] = dist
+
+                # if nat < o_besttwo[e] and pred == setup["target"]:
+                if dist < o_bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001)):
+                    # if two < o_besttwo[e] and pred == setup["target"] :
+                # if emd < o_besttwo[e] and pred == setup["target"] and d_pred != victim:
+                    o_besttwo[e] = two
                     o_bestscore[e]=pred
                     o_bestattack[e] = ii  # ii
                     o_bestnat[e] = nat
                     o_bestinfty[e] = linfty
                     o_bestcham[e] = cham
                     o_bestemd[e] = emd
+                    o_bestdist[e] = dist
 
 
 
                     # print(str(e)*10)
-            # for e, (dist, pred, ii, linfty) in enumerate(zip(dist_val, pred_val, input_val, dist_infty)):
-            #     # and nat < bestdist[e]:
+            # for e, (two, pred, ii, linfty) in enumerate(zip(dist_two, pred_val, input_val, dist_infty)):
+            #     # and nat < besttwo[e]:
             #     if  pred == setup["target"] and linfty < bestinfty[e]:
-            #         bestdist[e] = dist
+            #         besttwo[e] = two
             #         bestscore[e] = pred
             #         bestinfty[e] = linfty
 
             #     # and nat < o_bestnat[e]:
             #     if  pred == setup["target"] and linfty < o_bestinfty[e]:
-            #         o_bestdist[e] = dist
+            #         o_besttwo[e] = two
             #         o_bestscore[e] = pred
             #         o_bestattack[e] = ii
             #         o_bestinfty[e] = linfty
@@ -623,7 +627,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
 
         # # adjust the constant as needed
         for e in range(BATCH_SIZE):
-            if bestscore[e]==setup["target"] and bestscore[e] != -1 and bestdist[e] <= o_bestdist[e] :
+            if bestscore[e]==setup["target"] and bestscore[e] != -1 and besttwo[e] <= o_besttwo[e] :
                 # success
                 lower_bound[e] = max(lower_bound[e], WEIGHT[e])
                 WEIGHT[e] = (lower_bound[e] + upper_bound[e]) / 2
@@ -657,7 +661,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
                     i_two[e] = max(i_two[e], BOUND_BALL_TWO[e][0][0])
                     BOUND_BALL_TWO[e] = np.ones_like(
                         BOUND_BALL_TWO[e]) * ((i_two[e] + u_two[e]) / 2)
-        # #bestdist_prev=deepcopy(bestdist)
+        # #besttwo_prev=deepcopy(besttwo)
 
                 # adjust the constant ALPHA as needed
         # for e in range(BATCH_SIZE):
@@ -672,10 +676,10 @@ def attack_one_batch(sess, ops, attacked_data, victim):
     print(" Successfully generated adversarial examples on {} of {} instances of class {}." .format(
         sum(o_bestscore == attacked_label), BATCH_SIZE, victim))
     print("best L 2 distance  :{:.2f}  best L_infty :{:.3f}   best L_nat :{:.3f}".format(
-        np.mean(o_bestdist), np.mean(o_bestinfty), np.mean(o_bestnat)))
+        np.mean(o_besttwo), np.mean(o_bestinfty), np.mean(o_bestnat)))
     print("\n \n ----------------------------------------- \n \n")
     
-    best_norms = {"L_2_norm_adv": o_bestdist, "L_infty_norm_adv": o_bestinfty,
+    best_norms = {"L_2_norm_adv": o_besttwo, "L_infty_norm_adv": o_bestinfty,
         "L_cham_norm_adv": o_bestcham,"L_emd_norm_adv": o_bestemd,
                   "natural_L_cham_norm_adv": o_bestnat}
     
