@@ -57,6 +57,7 @@ parser.add_argument('--hard_bound_mode', type=int, default=0,
 parser.add_argument('--dyn_bound_mode', type=int, default=0,
                     help='the int type of dyn bound mode : 0: no upper dyn bound... 1: b_infty upper hard bound on L infty 2: b_two upper hard bound on L 2')
 parser.add_argument('--target', type=int, default=5, help='target class index')
+parser.add_argument('--unnecessary', type=int, default=0, help='target class index')
 parser.add_argument('--victim', type=int, default=0, help='target class index')
 parser.add_argument('--lr_attack', type=float, default=0.005, help='learning rate for optimization based attack')
 parser.add_argument('--initial_alpha', type=float, default=0.3,help=' natural factor')
@@ -585,7 +586,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
             for e, (two, pred, d_pred, ii, linfty,nat,cham,emd) in enumerate(zip(dist_two, early_pred_val, late_pred_val, input_val, dist_infty, dist_nat,dist_cham,dist_emd)):
                 dist = (two, linfty, two)[setup["dyn_bound_mode"]]  # according to the norm mode we picked we pick the best distance 
                 # if nat < besttwo[e] and pred == setup["target"]:
-                if dist < bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001)) :
+                if dist < bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001) or bool(setup["unnecessary"])):
                 # if two < besttwo[e] and pred == setup["target"] :
                     # if emd < besttwo[e] and pred == setup["target"] and d_pred != victim:
                     besttwo[e] = two
@@ -596,7 +597,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
 
 
                 # if nat < o_besttwo[e] and pred == setup["target"]:
-                if dist < o_bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001)):
+                if dist < o_bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001) or bool(setup["unnecessary"])):
                     # if two < o_besttwo[e] and pred == setup["target"] :
                 # if emd < o_besttwo[e] and pred == setup["target"] and d_pred != victim:
                     o_besttwo[e] = two
@@ -718,11 +719,11 @@ if __name__=='__main__':
     setup = vars(FLAGS)
     models = {}
     initialize(setup, models)
-    victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    # victims_list = [35]
+    # victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
+    victims_list = [35]
     # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    # targets_list = [0]
-    targets_list = [5,0,35]
+    targets_list = [0]
+    # targets_list = [5,0,35]
 
 
     
