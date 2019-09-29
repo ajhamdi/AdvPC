@@ -431,6 +431,7 @@ def attack(setup,models,targets_list,victims_list):
 
 def attack_one_batch(sess, ops, attacked_data, victim):
     c_NUM_ITERATIONS = NUM_ITERATIONS
+    attacked_data = copy.deepcopy(attacked_data)
     ###############################################################
     ### a simple implementation
     ### Attack all the data in variable 'attacked_data' into the same target class (specified by TARGET)
@@ -465,7 +466,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
     o_bestcham = [1e10] * BATCH_SIZE
     o_bestemd = [1e10] * BATCH_SIZE
     o_bestscore = [-1] * BATCH_SIZE
-    o_bestattack = attacked_data
+    o_bestattack = copy.deepcopy(attacked_data)
 
     feed_dict = {ops['pointclouds_pl']: attacked_data,
          ops['is_training_pl']: is_training,
@@ -718,10 +719,10 @@ if __name__=='__main__':
     models = {}
     initialize(setup, models)
     victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    # victims_list = [0]
-    targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    # targets_list = [5]
-    # targets_list = [5,0,35]
+    # victims_list = [35]
+    # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
+    # targets_list = [0]
+    targets_list = [5,0,35]
 
 
     
