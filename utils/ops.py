@@ -22,19 +22,25 @@ def tf_norm_projection(x, norm, norm_type="l2", reduction_axis=[1, 2]):
     elif norm_type == "linfty":
         x_normalized =  tf.clip_by_value(x, clip_value_min=-norm, clip_value_max=norm)
     return x_normalized 
-def SRS(points, percentage = 0.1):
+
+
+def SRS(points, percentage=0.1):
     new_batch = np.zeros(points.shape)
     for j in range(points.shape[0]):
-            new = None
-            n = int(round(points[j].shape[0] * percentage))
-            idx = np.random.randint(low = 0, high = points.shape[1], size = n)
-            new = np.delete(points[j], idx, 0)
-            for i in range(len(idx)):
-                if new.shape[0] < points.shape[1]:
-                    new = np.append(new, [points[j][idx[i]-1]],axis = 0)
-                else:
-                    break
+        new = None
+        n = int(round(points.shape[1] * percentage))
+        idx = np.arange(points.shape[1])
+        np.random.shuffle(idx)
+        new = np.delete(points[j], idx[:n], 0)
+        s = points.shape[1]-n
+        if n == 0:
             new_batch[j] = new
+            continue
+        n_inx = np.random.randint(low=0, high=s, size=n)
+        #print(len(n_inx))
+        for i in range(len(n_inx)):
+            new = np.append(new, [new[n_inx[i]]], axis=0)
+        new_batch[j] = new
     return new_batch
 def SOR(points, alpha = 1.1, k = 3):
     new_batch = np.zeros(points.shape)

@@ -46,8 +46,8 @@ parser.add_argument('--data_dir', default='data', help='data folder path [data]'
 parser.add_argument('--dump_dir', default='natural', help='dump folder path [perturbation]')
 
 parser.add_argument('--evaluation_mode', type=int, default=0,
-                    help='the int type of evaluation mode : 0: predictions of different networks under the AE defense ... 1: SRS defense evaluation with --srs percentyage removal ... 2:SOR defense evaluation with --sor std factor.. 3:adv train defense   ')
-parser.add_argument('--srs', type=float, default=10.0,
+                    help='the int type of evaluation mode : 0: regukar targeted attack  .. 1: relativisitic loss targeteed attack   2:regular untargeted attack  3: relativisitic untargeted attack   ')
+parser.add_argument('--srs', type=float, default=0.1,
                     help='SRS percentage of the SRS defense if --evaluation_mode== 1')
 parser.add_argument('--sor', type=float, default=1.1,
                     help='SOR percentage of the SOR defense if --evaluation_mode== 2')
@@ -149,6 +149,7 @@ UPPER_BOUND_WEIGHT=FLAGS.upper_bound_weight
 #ABORT_EARLY=False
 BINARY_SEARCH_STEP=FLAGS.step
 NUM_ITERATIONS=FLAGS.num_iter
+DYN_FREQ = 10
 # top_out_dir = osp.join(BASE_DIR, "latent_3d_points", "data")
 # # Top-dir of where point-clouds are stored.
 # top_in_dir = osp.join(BASE_DIR, "latent_3d_points", "data",
@@ -254,7 +255,8 @@ def attack(setup,models,targets_list,victims_list):
         # is_projection = tf.placeholder(tf.bool, shape=())
 
         # pert=tf.get_variable(name='pert',shape=[BATCH_SIZE,NUM_POINT,3],initializer=tf.truncated_normal_initializer(stddev=0.01))
-        target = tf.placeholder(tf.int32, shape=())
+        target = tf.placeholder(tf.int32, shape=(None))
+        victim_label = tf.placeholder(tf.int32, shape=(None))
         pert = ae.pert_
         pointclouds_pl = ae.x
         pointclouds_input=ae.x_h
@@ -289,8 +291,15 @@ def attack(setup,models,targets_list,victims_list):
         else :
             print("network not known")
 
-        #adv loss
-        early_adv_loss = ae.get_adv_loss(early_pred, target)
+        #adv loss targeted /relativistic targeted /  untargeted 
+        if setup["evaluation_mode"] == 0:
+            early_adv_loss = ae.get_adv_loss(early_pred, target)
+        elif setup["evaluation_mode"] == 1:
+            early_adv_loss = ae.get_adv_loss(
+                early_pred, target) + ae.get_adv_loss(pointclouds_pl, victim_label)
+        elif setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3:
+            early_adv_loss = ae.get_adv_loss_batch(early_pred, target)
+
         dyn_target = tf.placeholder(tf.int32, shape=(None))
         late_adv_loss = ae.get_adv_loss_batch(late_pred, dyn_target)
         # nat_norm = tf.sqrt(tf.reduce_sum(
@@ -367,6 +376,7 @@ def attack(setup,models,targets_list,victims_list):
                "nat_weight": nat_weight,
                "infty_weight": infty_weight,
                "target":target,
+               "victim_label": victim_label,
                "cham_weight": cham_weight,
                "emd_weight": emd_weight,
                'pert': ae.pert,
@@ -417,7 +427,7 @@ def attack(setup,models,targets_list,victims_list):
                 attacked_data=attacked_data_all[victim]#attacked_data shape:25*1024*3
                 for j in range(NB_PER_VICTIM//BATCH_SIZE):
                     norms, img = attack_one_batch(
-                        sess, ops, attacked_data[j*BATCH_SIZE:(j+1)*BATCH_SIZE], victim)
+                        sess, ops, attacked_data[j*BATCH_SIZE:(j+1)*BATCH_SIZE], setup)
                     np.save(os.path.join('.',DUMP_DIR,'{}_{}_{}_adv.npy' .format(victim,setup["target"],j)),img)
                     [setups.append(setup) for ii in range(setup["batch_size"])]
                     results.extend(ListDict(norms))
@@ -430,7 +440,7 @@ def attack(setup,models,targets_list,victims_list):
         return results
 
 
-def attack_one_batch(sess, ops, attacked_data, victim):
+def attack_one_batch(sess, ops, attacked_data, setup):
     c_NUM_ITERATIONS = NUM_ITERATIONS
     attacked_data = copy.deepcopy(attacked_data)
     ###############################################################
@@ -473,6 +483,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
          ops['is_training_pl']: is_training,
          ops['lr_attack']:LR_ATTACK,
         ops['target']: setup["target"],
+        ops['victim_label']: setup["victim"],
         ops["bound_ball_infty"]: BOUND_BALL_infty,
         ops["bound_ball_two"]: BOUND_BALL_TWO,
         ops['dist_weight']: WEIGHT * BETA_TWO,
@@ -505,7 +516,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
 
         prev = 1e6      
 
-        late_pred_val = sess.run(ops['late_pred'], feed_dict=feed_dict)
+        early_pred_val,late_pred_val = sess.run([ops['early_pred'],ops['late_pred']], feed_dict=feed_dict)
 
 
         def untargeted_attack(all_values, victim):
@@ -519,8 +530,14 @@ def attack_one_batch(sess, ops, attacked_data, victim):
 
             return np.array(all_choices)
         
-        c_targets = untargeted_attack(late_pred_val,victim)
-        feed_dict[ops['dyn_target']] = c_targets
+        c_late_targets = untargeted_attack(late_pred_val,setup["victim"])
+        feed_dict[ops['dyn_target']] = c_late_targets
+
+        if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
+            c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
+            feed_dict[ops['target']] = c_early_targets
+
+
 
         for iteration in range(c_NUM_ITERATIONS):
             # feed_dict.update({ops['pointclouds_pl']: attacked_data})
@@ -555,9 +572,12 @@ def attack_one_batch(sess, ops, attacked_data, victim):
              ops['pert_norm'], ops['early_pred'], ops['late_pred'],
               ops['pointclouds_input'], ops['nat_norm'], ops["pert_cham"],
                ops["pert_emd"]], feed_dict=feed_dict)
-            if ((iteration+1) % 50) == 0:
-                c_targets = untargeted_attack(late_pred_val, victim)
-                feed_dict[ops['dyn_target']] = c_targets
+            if ((iteration+1) % DYN_FREQ) == 0:
+                c_late_targets = untargeted_attack(late_pred_val, setup["victim"])
+                feed_dict[ops['dyn_target']] = c_late_targets
+                if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
+                    c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
+                    feed_dict[ops['target']] = c_early_targets
             early_pred_val = np.argmax(early_pred_val, 1)
             late_pred_val = np.argmax(late_pred_val, 1)
             # print(20*"#", early_pred_val)
@@ -586,7 +606,10 @@ def attack_one_batch(sess, ops, attacked_data, victim):
             for e, (two, pred, d_pred, ii, linfty,nat,cham,emd) in enumerate(zip(dist_two, early_pred_val, late_pred_val, input_val, dist_infty, dist_nat,dist_cham,dist_emd)):
                 dist = (two, linfty, two)[setup["dyn_bound_mode"]]  # according to the norm mode we picked we pick the best distance 
                 # if nat < besttwo[e] and pred == setup["target"]:
-                if dist < bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001) or bool(setup["unnecessary"])):
+                adverserial_cond = (pred == setup["target"]) if (
+                    setup["evaluation_mode"] == 0 or setup["evaluation_mode"] == 1) else (pred != setup["victim"])
+                ae_cond = (d_pred != setup["victim"] or (GAMMA < 0.001) or bool(setup["unnecessary"]))
+                if dist < bestdist[e] and adverserial_cond and ae_cond:
                 # if two < besttwo[e] and pred == setup["target"] :
                     # if emd < besttwo[e] and pred == setup["target"] and d_pred != victim:
                     besttwo[e] = two
@@ -597,7 +620,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
 
 
                 # if nat < o_besttwo[e] and pred == setup["target"]:
-                if dist < o_bestdist[e] and pred == setup["target"] and (d_pred != victim or (GAMMA < 0.001) or bool(setup["unnecessary"])):
+                if dist < o_bestdist[e] and adverserial_cond and ae_cond:
                     # if two < o_besttwo[e] and pred == setup["target"] :
                 # if emd < o_besttwo[e] and pred == setup["target"] and d_pred != victim:
                     o_besttwo[e] = two
@@ -676,7 +699,7 @@ def attack_one_batch(sess, ops, attacked_data, victim):
         #         ALPHA[e] = (1-GAMMA)*ALPHA[e]
 
     print(" Successfully generated adversarial examples on {} of {} instances of class {}." .format(
-        sum(o_bestscore == attacked_label), BATCH_SIZE, victim))
+        sum(o_bestscore == attacked_label), BATCH_SIZE, setup["victim"]))
     print("best L 2 distance  :{:.2f}  best L_infty :{:.3f}   best L_nat :{:.3f}".format(
         np.mean(o_besttwo), np.mean(o_bestinfty), np.mean(o_bestnat)))
     print("\n \n ----------------------------------------- \n \n")
@@ -696,24 +719,22 @@ def initialize(setup,models):
         pn1_dir = os.path.join(BASE_DIR, "..", "pointnet2")
         pn2_dir = os.path.join(BASE_DIR, "..", "pointnet2")
         gcn_dir = os.path.join(BASE_DIR, "..", "dgcnn", "tensorflow")
-        PN = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
-        PN1 = os.path.join(pn1_dir, 'models', "pointnet2_ssg_cls_2scales.py")
-        PN2 = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls.py")
-        GCN = os.path.join(gcn_dir, 'models', "dgcnn.py")
-        PN_PATH = os.path.join(BASE_DIR, "log", "PN", "model.ckpt")
-        PN1_PATH = os.path.join(BASE_DIR, "log", "PN1", "model.ckpt")
-        PN2_PATH = os.path.join(BASE_DIR, "log", "PN2", "model.ckpt")
-        GCN_PATH = os.path.join(BASE_DIR, "log", "GCN", "model.ckpt")
-        models["PN_PATH"] = PN_PATH
-        models["PN1_PATH"] = PN1_PATH
-        models["PN2_PATH"] = PN2_PATH
-        models["GCN_PATH"] = GCN_PATH
-        models["PN"] = PN
-        models["PN1"] = PN1
-        models["PN2"] = PN2
-        models["GCN"] = GCN
+
+        models["PN_PATH"] = os.path.join(BASE_DIR, "log", "PN", "model.ckpt")
+        models["PN1_PATH"] = os.path.join(BASE_DIR, "log", "PN1", "model.ckpt")
+        models["PN2_PATH"] = os.path.join(BASE_DIR, "log", "PN2", "model.ckpt")
+        models["GCN_PATH"] = os.path.join(BASE_DIR, "log", "GCN", "model.ckpt")
+        models["PN_PATH_ROBUST"] = os.path.join(BASE_DIR, "Adv_Training", "PN", "model.ckpt")
+        models["PN1_PATH_ROBUST"] = os.path.join(BASE_DIR, "Adv_Training", "PN1", "model.ckpt")
+        models["PN2_PATH_ROBUST"] = os.path.join(BASE_DIR, "Adv_Training", "PN2", "model.ckpt")
+        models["GCN_PATH_ROBUST"] = os.path.join(BASE_DIR, "Adv_Training", "GCN", "model.ckpt")
+        models["PN"] = os.path.join(BASE_DIR, 'models', "pointnet_cls.py")
+        models["PN1"] = os.path.join(pn1_dir, 'models', "pointnet2_cls_msg.py")
+        models["PN2"] = os.path.join(pn2_dir, 'models', "pointnet2_ssg_cls.py")
+        models["GCN"] = os.path.join(gcn_dir, 'models', "dgcnn.py")
         models["test"] = copy.deepcopy(models[setup["network"]])
         models["test_path"] = copy.deepcopy(models[setup["network"]+"_PATH"])
+        models["test_path_robust"] = copy.deepcopy(models[setup["network"]+"_PATH_ROBUST"])
 
 if __name__=='__main__':
     setup = vars(FLAGS)
@@ -724,6 +745,9 @@ if __name__=='__main__':
     # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     targets_list = [0]
     # targets_list = [5,0,35]
+    if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
+        targets_list = [-1]
+        
 
 
     

@@ -85,7 +85,7 @@ class ListDict(object):
         if isinstance(keylist_or_dict, list):
             self.listdict = {k: [] for k in keylist_or_dict}
         elif isinstance(keylist_or_dict, dict):
-            if isinstance(keylist_or_dict.values()[0], list):
+            if isinstance(list(keylist_or_dict.values())[0], list):
                 self.listdict = copy.deepcopy(keylist_or_dict)
             else :
                 self.listdict = {k: [v] for k, v in keylist_or_dict.items()}

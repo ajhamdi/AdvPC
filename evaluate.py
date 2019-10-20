@@ -62,6 +62,10 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
     orig_acc_o = list(evaluate_ptc(SOR(orig_pts, setup["sor"]), models["test"], models["test_path"], verbose=False))
     adv_acc_o = list(evaluate_ptc(SOR(nat_pts, setup["sor"]), models["test"], models["test_path"], verbose=False))
     # b_adv_acc_o = list(evaluate_ptc(SOR(adv_pts),models["PN"],models["PN_PATH"],verbose=False))
+    
+    orig_acc_bust = list(evaluate_ptc(orig_pts, models["test"], models["test_path_robust"], verbose=False))
+    adv_acc_bust = list(evaluate_ptc(nat_pts, models["test"], models["test_path_robust"], verbose=False))
+
 
     accuracies = {
         "orig_acc": orig_acc,
@@ -83,7 +87,9 @@ def evaluate_all_shapes_scale(batch_indx, setup=None, models=None):
         "orig_acc_r": orig_acc_r,
         "adv_acc_r": adv_acc_r,
         "orig_acc_o": orig_acc_o,
-        "adv_acc_o": adv_acc_o
+        "adv_acc_o": adv_acc_o,
+        "orig_acc_bust":orig_acc_bust,
+        "adv_acc_bust":adv_acc_bust
         }
 
 
@@ -247,7 +253,10 @@ def evaluate(setup, results,models,targets_list, victims_list):
         "adv_suc_o": "natural adverserial accuracy under Outlier defense",
         "adv_acc_o": "natural adverserial sucess rate under Outlier defense",
         "b_adv_suc_o": "baseline  adverserial accuracy under Outlier defense",
-        "b_adv_acc_o": "baseline  adverserial sucess rate under Outlier defense"}
+        "b_adv_acc_o": "baseline  adverserial sucess rate under Outlier defense",
+        "orig_acc_bust": "original accuracy under Robust model",
+        "adv_acc_bust": "natural adverserial accuracy under Robust model"
+        }
 
     # accuracies_names  = [
     #     "orig_acc", "adv_acc", "proj_acc", "rec_acc", "orig_acc_pp", , "orig_acc_p"
