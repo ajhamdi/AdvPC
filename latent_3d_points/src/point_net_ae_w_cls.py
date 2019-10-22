@@ -329,37 +329,35 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
         pointnet_util = imp.load_source('pointnet_util', os.path.join(os.path.dirname(self.models["test"]),'../utils', "pointnet_util.py"))
         tf_util = imp.load_source('tf_util', os.path.join(
             os.path.dirname(self.models["test"]), '../utils', "tf_util.py"))
-        from pointnet_util import pointnet_sa_module
+        from pointnet_util import pointnet_sa_module, pointnet_sa_module_msg
         batch_size = self.configuration.batch_size
         num_point = self.configuration.n_input[0]
         end_points = {}
         l0_xyz = point_cloud
         l0_points = None
-        end_points['l0_xyz'] = l0_xyz
 
-        # Set abstraction layers
-        # Note: When using NCHW for layer 2, we see increased GPU memory usage (in TF1.4).
-        # So we only use NCHW for layer 1 until this issue can be resolved.
-        # l1_xyz, l1_points, l1_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=512, radius=0.2, nsample=32, mlp=[
-        #     64, 64, 128], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, scope='layer1', use_nchw=True)
-        l2_xyz, l2_points, l2_indices = pointnet_sa_module(l0_xyz, l0_points, npoint=128, radius=0.4, nsample=64, mlp=[
-                                                        128, 128, 256], mlp2=None, group_all=False, is_training=is_training, bn_decay=bn_decay, scope='layer2')
-        l3_xyz, l3_points, l3_indices = pointnet_sa_module(l2_xyz, l2_points, npoint=None, radius=None, nsample=None, mlp=[
-                                                        256, 512, 1024], mlp2=None, group_all=True, is_training=is_training, bn_decay=bn_decay, scope='layer3')
+    # Set abstraction layers
+        l1_xyz, l1_points = pointnet_sa_module_msg(l0_xyz, l0_points, 512, [0.1, 0.2, 0.4], [16, 32, 128], [
+                                                [32, 32, 64], [64, 64, 128], [64, 96, 128]], is_training, bn_decay, scope='layer1', use_nchw=True)
+        l2_xyz, l2_points = pointnet_sa_module_msg(l1_xyz, l1_points, 128, [0.2, 0.4, 0.8], [32, 64, 128], [
+                                                [64, 64, 128], [128, 128, 256], [128, 128, 256]], is_training, bn_decay, scope='layer2')
+        l3_xyz, l3_points, _ = pointnet_sa_module(l2_xyz, l2_points, npoint=None, radius=None, nsample=None, mlp=[
+                                                256, 512, 1024], mlp2=None, group_all=True, is_training=is_training, bn_decay=bn_decay, scope='layer3')
 
         # Fully connected layers
         net = tf.reshape(l3_points, [batch_size, -1])
         net = tf_util.fully_connected(
             net, 512, bn=True, is_training=is_training, scope='fc1', bn_decay=bn_decay)
-        net = tf_util.dropout(net, keep_prob=0.5,
+        net = tf_util.dropout(net, keep_prob=0.4,
                             is_training=is_training, scope='dp1')
         net = tf_util.fully_connected(
             net, 256, bn=True, is_training=is_training, scope='fc2', bn_decay=bn_decay)
-        net = tf_util.dropout(net, keep_prob=0.5,
+        net = tf_util.dropout(net, keep_prob=0.4,
                             is_training=is_training, scope='dp2')
         net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
 
         return net, end_points
+
 
     def get_model_w_ae(self, input_x, is_training, reuse=False, bn_decay=None):
         """
