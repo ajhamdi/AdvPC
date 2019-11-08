@@ -16,6 +16,7 @@ parser.add_argument('--step', type=int, default=2,
                     help='number of the hyper steps done ')
 
 
+
 def generate_setup(cluster_nb=0):
     cluster_setup = []
     two_epsilons = [0, 0.001, 0.1, 0.22, 0.28, 0.32, 0.4, 0.48, 0.60,
