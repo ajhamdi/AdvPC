@@ -748,7 +748,9 @@ if __name__=='__main__':
     victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     # victims_list = [35]
     targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    targets_list = targets_list[setup["target"]::]
+    # targets_list = targets_list[setup["target"]::]
+    targets_list = [setup["target"]]
+
 
 
     # targets_list = [0]
@@ -770,7 +772,8 @@ if __name__=='__main__':
     elif setup["phase"] == "all":
         log_setup(setup, setup["setups_file"])
         results = attack(setup,models, targets_list, victims_list)
-        targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
+        # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
+        # targets_list = targets_list[setup["target"]]
         ev_results = evaluate(setup, results,models, targets_list, victims_list)
     else :
         print("unkown phase")
