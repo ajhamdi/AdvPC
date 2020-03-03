@@ -145,7 +145,9 @@ def evaluate(setup, results,models,targets_list, victims_list):
                         "shape_net_core_uniform_samples_2048")
 
 
-    experiment_name = 'single_class_ae'
+    # experiment_name = 'single_class_ae'
+    experiment_name = 'new_ae'
+
     n_pc_ppoints = 1024  # 2048                # Number of points per model.
     bneck_size = 128                  # Bottleneck-AE size
     # Loss to optimize: 'emd' or 'chamfer'             # Bottleneck-AE size

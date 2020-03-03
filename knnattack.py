@@ -43,51 +43,60 @@ parser.add_argument('--network', default='PN', choices=['PN', 'PN1', 'PN2',"GCN"
 parser.add_argument('--batch_size', type=int, default=5, help='Batch Size for attack [default: 5]')
 parser.add_argument('--num_point', type=int, default=1024, help='Point Number [256/512/1024/2048] [default: 1024]')
 parser.add_argument('--data_dir', default='data', help='data folder path [data]')
-parser.add_argument('--dump_dir', default='ablation', help='dump folder path [perturbation]')
+parser.add_argument('--dump_dir', default='knn', help='dump folder path [perturbation]')
 
-parser.add_argument('--evaluation_mode', type=int, default=0,
+parser.add_argument('--evaluation_mode', type=int, default=2,
                     help='the int type of evaluation mode : 0: regukar targeted attack  .. 1: relativisitic loss targeteed attack   2:regular untargeted attack  3: relativisitic untargeted attack   ')
 parser.add_argument('--srs', type=float, default=0.1,
                     help='SRS percentage of the SRS defense if --evaluation_mode== 1')
 parser.add_argument('--sor', type=float, default=1.1,
                     help='SOR percentage of the SOR defense if --evaluation_mode== 2')
 
-parser.add_argument('--hard_bound_mode', type=int, default=0,
+parser.add_argument('--hard_bound_mode', type=int, default=1,
    help='the int type of hard bound mode : 0: no upper hard bound... 1: u_infty upper hard bound on L infty 2: u_two upper hard bound on L 2')
-parser.add_argument('--dyn_bound_mode', type=int, default=0,
+parser.add_argument('--dyn_bound_mode', type=int, default=1,
                     help='the int type of dyn bound mode : 0: no upper dyn bound... 1: b_infty upper hard bound on L infty 2: b_two upper hard bound on L 2')
 parser.add_argument('--target', type=int, default=5, help='target class index')
-parser.add_argument('--unnecessary', type=int, default=0, help='target class index')
+parser.add_argument('--unnecessary', type=int, default=1, help='target class index')
 parser.add_argument('--victim', type=int, default=0, help='target class index')
 parser.add_argument('--lr_attack', type=float, default=0.005, help='learning rate for optimization based attack')
-parser.add_argument('--initial_alpha', type=float, default=0.3,help=' natural factor')
+parser.add_argument('--initial_alpha', type=float, default=0,help=' natural factor')
 
-parser.add_argument('--gamma', type=float, default=0.2,help='natural factor ')
+parser.add_argument('--gamma', type=float, default=0,help='natural factor ')
+parser.add_argument('--kappa', type=float, default=15, help='margin of attack ')
+parser.add_argument('--kappa_ae', type=float,
+                    default=0, help='margin of attack on the AE output ')
+
 
 parser.add_argument('--u_infty', type=float, default=0.362,
                     help='hard_upper_bound on L infty')
 parser.add_argument('--u_two', type=float, default=0.362,
                     help='hard_upper_bound on L two')
 
-parser.add_argument('--beta_two', type=float, default=1,
+parser.add_argument('--beta_two', type=float, default=0,
                     help='L 2 factor')
 parser.add_argument('--beta_infty', type=float, default=0.0,
                     help='L infty factor')
-parser.add_argument('--beta_cham', type=float, default=0.0,
+parser.add_argument('--beta_cham', type=float, default=5,
                     help='L Chamfer factor')
-parser.add_argument('--beta_emd', type=float, default=0.0,
+parser.add_argument('--beta_emd', type=float, default=0,
                     help='L EMD factor')
+parser.add_argument('--beta_knn', type=float, default=3,
+                    help='L K-NN factor')
+parser.add_argument('--knn', type=float, default=10,
+                    help='L K-NN factor')
 
-parser.add_argument('--b_infty', type=float, default=0.2,
+
+parser.add_argument('--b_infty', type=float, default=0.1,
                     help='L infty dynamic hard bound b infty')
-parser.add_argument('--s_infty', type=float, default=0.2,
+parser.add_argument('--s_infty', type=float, default=0.1,
                     help='L infty soft bound s_infty')
-parser.add_argument('--b_two', type=float, default=0.2,
+parser.add_argument('--b_two', type=float, default=4,
                     help='L 2 dynamic hard bound b_2 ')
 
-parser.add_argument('--initial_weight', type=float, default=10, help='initial value for the parameter lambda')
+parser.add_argument('--initial_weight', type=float, default=1, help='initial value for the parameter lambda')
 parser.add_argument('--upper_bound_weight', type=float, default=80, help='upper_bound value for the parameter lambda')
-parser.add_argument('--step', type=int, default=10, help='binary search step')
+parser.add_argument('--step', type=int, default=1, help='binary search step')
 parser.add_argument('--num_iter', type=int, default=500, help='number of iterations for each binary search step')
 parser.add_argument('--cluster_nb', type=int, default=0,
                     help='number of the exp in a cluster array ')
@@ -104,7 +113,8 @@ parser.add_argument('--dyn_freq', type=int, default=10,
 FLAGS = parser.parse_args()
 
 
-
+KAPPA = FLAGS.kappa
+KAPPA_AE = FLAGS.kappa_ae
 BATCH_SIZE = FLAGS.batch_size
 NUM_POINT = FLAGS.num_point
 GPU_INDEX = FLAGS.gpu
@@ -271,27 +281,27 @@ def attack(setup,models,targets_list,victims_list):
                 early_pred, end_points = ae.get_model_w_ae(
                     pointclouds_input, is_training_pl)
             with tf.variable_scope("QQ", reuse=False):
-                late_pred, end_points = ae.get_model_w_ae(ae.x_reconstr, is_training_pl)
+                late_pred, end_points_late = ae.get_model_w_ae(ae.x_reconstr, is_training_pl)
         elif setup["network"] == "PN1":
             with tf.variable_scope(tf.get_variable_scope(), reuse=False):
                 early_pred, end_points = ae.get_model_w_ae_p(
                     pointclouds_input, is_training_pl)
             with tf.variable_scope("QQ", reuse=False):
-                late_pred, end_points = ae.get_model_w_ae_p(
+                late_pred, end_points_late = ae.get_model_w_ae_p(
                     ae.x_reconstr, is_training_pl)
         elif setup["network"] == "PN2":
             with tf.variable_scope(tf.get_variable_scope(), reuse=False):
                 early_pred, end_points = ae.get_model_w_ae_pp(
                     pointclouds_input, is_training_pl)
             with tf.variable_scope("QQ", reuse=False):
-                late_pred, end_points = ae.get_model_w_ae_pp(
+                late_pred, end_points_late = ae.get_model_w_ae_pp(
                     ae.x_reconstr, is_training_pl)
         elif setup["network"] == "GCN":
             with tf.variable_scope(tf.get_variable_scope(), reuse=False):
                 early_pred, end_points = ae.get_model_w_ae_gcn(
                     pointclouds_input, is_training_pl)
             with tf.variable_scope("QQ", reuse=False):
-                late_pred, end_points = ae.get_model_w_ae_gcn(
+                late_pred, end_points_late = ae.get_model_w_ae_gcn(
                     ae.x_reconstr, is_training_pl)
         else :
             print("network not known")
@@ -303,10 +313,12 @@ def attack(setup,models,targets_list,victims_list):
             early_adv_loss = ae.get_adv_loss(
                 early_pred, target) + ae.get_adv_loss(pointclouds_pl, victim_label)
         elif setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3:
-            early_adv_loss = ae.get_adv_loss_batch(early_pred, target)
+            early_adv_loss = ae.get_untargeted_adv_loss(early_pred, victim_label, setup["kappa"])
 
         dyn_target = tf.placeholder(tf.int32, shape=(None))
-        late_adv_loss = ae.get_adv_loss_batch(late_pred, dyn_target)
+        # late_adv_loss = ae.get_adv_loss_batch(late_pred, dyn_target)
+        late_adv_loss = ae.get_untargeted_adv_loss(
+            late_pred, victim_label, setup["kappa_ae"])
         # nat_norm = tf.sqrt(tf.reduce_sum(
         #     tf.square(ae.x_reconstr - ae.x_h), [1, 2]))
         nat_norm = 1000*ae.chamfer_distance(ae.x_reconstr, ae.x_h)
@@ -320,7 +332,10 @@ def attack(setup,models,targets_list,victims_list):
         pert_bound = tf.norm(
             tf.nn.relu(pert-S_INFTY), ord=1, axis=(1, 2))
         pert_cham = 1000*ae.chamfer_distance(pointclouds_input, pointclouds_pl)
+        pert_knn = 1000*ae.knn_loss(pointclouds_input,K=setup["knn"])
         pert_emd = ae.emd_distance(pointclouds_input, pointclouds_pl)
+
+
 
 
         dist_weight=tf.placeholder(shape=[BATCH_SIZE],dtype=tf.float32)
@@ -332,13 +347,15 @@ def attack(setup,models,targets_list,victims_list):
         attack_optimizer = tf.train.AdamOptimizer(lr_attack)
         l_2_loss = tf.reduce_mean(tf.multiply(dist_weight, pert_norm))
         l_cham_loss = tf.reduce_mean(tf.multiply(cham_weight, pert_cham))
+        l_knn_loss = tf.reduce_mean(pert_knn)
+
         l_emd_loss = tf.reduce_mean(tf.multiply(emd_weight, pert_emd))
 
         nat_loss = tf.reduce_mean(tf.multiply(nat_weight, nat_norm))
 
         l_infty_loss = tf.reduce_mean(tf.multiply(infty_weight, pert_bound))
         adv_loss = (1-GAMMA)*early_adv_loss + (GAMMA)* late_adv_loss
-        distance_loss = l_2_loss + nat_loss + l_infty_loss + l_cham_loss + l_emd_loss
+        distance_loss =  l_cham_loss+ l_knn_loss #+  l_2_loss + nat_loss + l_infty_loss +  l_emd_loss 
         total_loss = adv_loss + distance_loss
         attack_op = attack_optimizer.minimize(total_loss,var_list=[ae.pert])
         
@@ -399,8 +416,9 @@ def attack(setup,models,targets_list,victims_list):
                "bound_ball_infty": ae.bound_ball_infty,
                "bound_ball_two": ae.bound_ball_two,
                "pert_cham": pert_cham,
+               "pert_knn": pert_knn,
                "pert_emd": pert_emd,
-               #'total_loss':tf.reduce_mean(tf.multiply(dist_weight,pert_norm))+adv_loss,
+               'total_loss': total_loss,
                'lr_attack':lr_attack,
                "x_m": ae.x_reconstr,
                'attack_op':attack_op
@@ -484,18 +502,18 @@ def attack_one_batch(sess, ops, attacked_data, setup):
     o_bestscore = [-1] * BATCH_SIZE
     o_bestattack = copy.deepcopy(attacked_data)
 
-    feed_dict = {ops['pointclouds_pl']: attacked_data,
-         ops['is_training_pl']: is_training,
-         ops['lr_attack']:LR_ATTACK,
-        ops['target']: setup["target"],
-        ops['victim_label']: setup["victim"],
-        ops["bound_ball_infty"]: BOUND_BALL_infty,
-        ops["bound_ball_two"]: BOUND_BALL_TWO,
-        ops['dist_weight']: WEIGHT * BETA_TWO,
-        ops['infty_weight']: WEIGHT * BETA_INFTY,
-        ops['cham_weight']: WEIGHT * BETA_CHAM,
-        ops['emd_weight']: WEIGHT * BETA_EMD,
-        ops["nat_weight"]: WEIGHT*ALPHA}
+    feed_dict={ops['pointclouds_pl']: attacked_data,
+            ops['is_training_pl']: is_training,
+            ops['lr_attack']: LR_ATTACK,
+            ops['target']: setup["target"],
+            ops['victim_label']: setup["victim"],
+            ops["bound_ball_infty"]: BOUND_BALL_infty,
+            ops["bound_ball_two"]: BOUND_BALL_TWO,
+            ops['dist_weight']: WEIGHT * BETA_TWO,
+            ops['infty_weight']: WEIGHT * BETA_INFTY,
+            ops['cham_weight']: WEIGHT * BETA_CHAM,
+            ops['emd_weight']: WEIGHT * BETA_EMD,
+            ops["nat_weight"]: WEIGHT*ALPHA}
 
 
     for out_step in range(BINARY_SEARCH_STEP):
@@ -509,19 +527,18 @@ def attack_one_batch(sess, ops, attacked_data, setup):
         feed_dict[ops["bound_ball_two"]] =  BOUND_BALL_TWO
 
 
-
-        sess.run(tf.assign(ops['pert'],tf.truncated_normal([BATCH_SIZE,NUM_POINT,3], mean=0, stddev=0.0000001)))
+        sess.run(tf.assign(ops['pert'], tf.truncated_normal([BATCH_SIZE, NUM_POINT, 3], mean=0, stddev=0.00001)))
 
         bestdist = [1e10] * BATCH_SIZE
         besttwo = [1e10] * BATCH_SIZE
         bestnat = [1e10] * BATCH_SIZE
         bestinfty = [1e10] * BATCH_SIZE
 
-        bestscore = [-1] * BATCH_SIZE  
+        bestscore = [-1] * BATCH_SIZE
 
-        prev = 1e6      
+        prev = 1e6
 
-        early_pred_val,late_pred_val = sess.run([ops['early_pred'],ops['late_pred']], feed_dict=feed_dict)
+        # early_pred_val,late_pred_val = sess.run([ops['early_pred'],ops['late_pred']], feed_dict=feed_dict)
 
 
         def untargeted_attack(all_values, victim):
@@ -535,12 +552,12 @@ def attack_one_batch(sess, ops, attacked_data, setup):
 
             return np.array(all_choices)
         
-        c_late_targets = untargeted_attack(late_pred_val,setup["victim"])
-        feed_dict[ops['dyn_target']] = c_late_targets
+        # c_late_targets = untargeted_attack(late_pred_val,setup["victim"])
+        # feed_dict[ops['dyn_target']] = c_late_targets
 
-        if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
-            c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
-            feed_dict[ops['target']] = c_early_targets
+        # if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
+        #     c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
+        #     feed_dict[ops['target']] = c_early_targets
 
 
 
@@ -573,30 +590,27 @@ def attack_one_batch(sess, ops, attacked_data, setup):
 #########################################################################################
             # adv_loss_val, dist_two, early_pred_val,late_pred_val, input_val, dist_nat = sess.run([ops['adv_loss'],
             #     ops['pert_norm'], ops['early_pred'], ops['late_pred'], ops['pointclouds_input'], ops['nat_norm']], feed_dict=feed_dict)
-            adv_loss_val , dist_two, early_pred_val, late_pred_val, input_val, dist_nat,dist_cham, dist_emd = sess.run([ops['adv_loss'],
+            total_loss_val, adv_loss_val, dist_two, early_pred_val, late_pred_val, input_val, dist_nat, dist_cham, dist_knn = sess.run([ops['total_loss'], ops['adv_loss'],
              ops['pert_norm'], ops['early_pred'], ops['late_pred'],
               ops['pointclouds_input'], ops['nat_norm'], ops["pert_cham"],
-               ops["pert_emd"]], feed_dict=feed_dict)
-            if ((iteration+1) % DYN_FREQ) == 0:
-                c_late_targets = untargeted_attack(late_pred_val, setup["victim"])
-                feed_dict[ops['dyn_target']] = c_late_targets
-                if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
-                    c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
-                    feed_dict[ops['target']] = c_early_targets
+               ops["pert_knn"]], feed_dict=feed_dict)
+            # if ((iteration+1) % DYN_FREQ) == 0:
+            #     c_late_targets = untargeted_attack(late_pred_val, setup["victim"])
+            #     feed_dict[ops['dyn_target']] = c_late_targets
+            #     if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
+            #         c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
+            #         feed_dict[ops['target']] = c_early_targets
             early_pred_val = np.argmax(early_pred_val, 1)
             late_pred_val = np.argmax(late_pred_val, 1)
             # print(20*"#", early_pred_val)
-            loss = adv_loss_val + \
-                np.average(dist_two*WEIGHT) + \
-                np.average(dist_nat*WEIGHT*ALPHA)
             dist_infty = np.amax(
                 np.abs(input_val - attacked_data), axis=(1, 2))
 
             if iteration % ((NUM_ITERATIONS // 10) or 1) == 0:
                 print((" Iter {:3d} of {}: loss={:.2f} adv:{:.2f} " +
-                       " TWO={:.3f} infty={:.3f} Cham={:.2f} NAT={:.2f} ")
+                       " TWO={:.3f} infty={:.3f} Cham={:.2f} KNN={:.2f} ")
                               .format(iteration, NUM_ITERATIONS,
-                                      loss, adv_loss_val, np.mean(dist_two), np.mean(dist_infty), np.mean(dist_cham), np.mean(dist_nat)))
+                                      total_loss_val, adv_loss_val, np.mean(dist_two), np.mean(dist_infty), np.mean(dist_cham), np.mean(dist_knn)))
             # check if we should abort search if we're getting nowhere.
             '''
             if ABORT_EARLY and iteration % ((MAX_ITERATIONS // 10) or 1) == 0:
@@ -608,13 +622,13 @@ def attack_one_batch(sess, ops, attacked_data, setup):
                 prev = loss
             '''
 
-            for e, (two, pred, d_pred, ii, linfty,nat,cham,emd) in enumerate(zip(dist_two, early_pred_val, late_pred_val, input_val, dist_infty, dist_nat,dist_cham,dist_emd)):
-                dist = (two, linfty, two)[setup["dyn_bound_mode"]]  # according to the norm mode we picked we pick the best distance 
+            for e, (two, pred, d_pred, ii, linfty,nat,cham) in enumerate(zip(dist_two, early_pred_val, late_pred_val, input_val, dist_infty, dist_nat,dist_cham)):
+                dist = cham
                 # if nat < besttwo[e] and pred == setup["target"]:
                 adverserial_cond = (pred == setup["target"]) if (
                     setup["evaluation_mode"] == 0 or setup["evaluation_mode"] == 1) else (pred != setup["victim"])
-                ae_cond = (d_pred != setup["victim"] or (GAMMA < 0.001) or bool(setup["unnecessary"]))
-                if dist < bestdist[e] and adverserial_cond and ae_cond:
+                ae_cond = (d_pred != setup["victim"] or (setup["cluster_nb"] != 2))
+                if (dist < bestdist[e] or bool(setup["cluster_nb"])) and adverserial_cond and ae_cond:
                 # if two < besttwo[e] and pred == setup["target"] :
                     # if emd < besttwo[e] and pred == setup["target"] and d_pred != victim:
                     besttwo[e] = two
@@ -625,7 +639,7 @@ def attack_one_batch(sess, ops, attacked_data, setup):
 
 
                 # if nat < o_besttwo[e] and pred == setup["target"]:
-                if dist < o_bestdist[e] and adverserial_cond and ae_cond:
+                if (dist < o_bestdist[e]  or bool(setup["cluster_nb"])) and adverserial_cond and ae_cond:
                     # if two < o_besttwo[e] and pred == setup["target"] :
                 # if emd < o_besttwo[e] and pred == setup["target"] and d_pred != victim:
                     o_besttwo[e] = two
@@ -634,7 +648,6 @@ def attack_one_batch(sess, ops, attacked_data, setup):
                     o_bestnat[e] = nat
                     o_bestinfty[e] = linfty
                     o_bestcham[e] = cham
-                    o_bestemd[e] = emd
                     o_bestdist[e] = dist
 
 
@@ -656,41 +669,42 @@ def attack_one_batch(sess, ops, attacked_data, setup):
                     # print(str(e)*10)
 
         # # adjust the constant as needed
-        for e in range(BATCH_SIZE):
-            if bestscore[e]==setup["target"] and bestscore[e] != -1 and besttwo[e] <= o_besttwo[e] :
-                # success
-                lower_bound[e] = max(lower_bound[e], WEIGHT[e])
-                WEIGHT[e] = (lower_bound[e] + upper_bound[e]) / 2
-                #print('new result found!')
-            else:
-                # failure
-                upper_bound[e] = min(upper_bound[e], WEIGHT[e])
-                WEIGHT[e] = (lower_bound[e] + upper_bound[e]) / 2
-        if setup["dyn_bound_mode"] == 1:
+        if not bool(setup["cluster_nb"]):
             for e in range(BATCH_SIZE):
-                if bestscore[e] == setup["target"] and bestscore[e] != -1 and bestinfty[e] <= o_bestinfty[e]:
+                if bestscore[e]==setup["target"] and bestscore[e] != -1 and besttwo[e] <= o_besttwo[e] :
                     # success
-                    u_infty[e] = min(u_infty[e], BOUND_BALL_infty[e][0][0])
-                    BOUND_BALL_infty[e] = np.ones_like(BOUND_BALL_infty[e]) *( (i_infty[e] + u_infty[e]) / 2)
-                    # print('new result found!')
+                    lower_bound[e] = max(lower_bound[e], WEIGHT[e])
+                    WEIGHT[e] = (lower_bound[e] + upper_bound[e]) / 2
+                    #print('new result found!')
                 else:
                     # failure
-                    i_infty[e] = max(i_infty[e], BOUND_BALL_infty[e][0][0])
-                    BOUND_BALL_infty[e] = np.ones_like(BOUND_BALL_infty[e])* ((i_infty[e] + u_infty[e]) / 2)
+                    upper_bound[e] = min(upper_bound[e], WEIGHT[e])
+                    WEIGHT[e] = (lower_bound[e] + upper_bound[e]) / 2
+            if setup["dyn_bound_mode"] == 1:
+                for e in range(BATCH_SIZE):
+                    if bestscore[e] == setup["target"] and bestscore[e] != -1 and bestinfty[e] <= o_bestinfty[e]:
+                        # success
+                        u_infty[e] = min(u_infty[e], BOUND_BALL_infty[e][0][0])
+                        BOUND_BALL_infty[e] = np.ones_like(BOUND_BALL_infty[e]) *( (i_infty[e] + u_infty[e]) / 2)
+                        # print('new result found!')
+                    else:
+                        # failure
+                        i_infty[e] = max(i_infty[e], BOUND_BALL_infty[e][0][0])
+                        BOUND_BALL_infty[e] = np.ones_like(BOUND_BALL_infty[e])* ((i_infty[e] + u_infty[e]) / 2)
 
-        elif setup["dyn_bound_mode"] == 2:
-            for e in range(BATCH_SIZE):
-                if bestscore[e] == setup["target"] and bestscore[e] != -1 and bestinfty[e] <= o_bestinfty[e]:
-                    # success
-                    u_two[e] = min(u_two[e], BOUND_BALL_TWO[e][0][0])
-                    BOUND_BALL_TWO[e] = np.ones_like(
-                        BOUND_BALL_TWO[e]) * ((i_two[e] + u_two[e]) / 2)
-                    # print('new result found!')
-                else:
-                    # failure
-                    i_two[e] = max(i_two[e], BOUND_BALL_TWO[e][0][0])
-                    BOUND_BALL_TWO[e] = np.ones_like(
-                        BOUND_BALL_TWO[e]) * ((i_two[e] + u_two[e]) / 2)
+            elif setup["dyn_bound_mode"] == 2:
+                for e in range(BATCH_SIZE):
+                    if bestscore[e] == setup["target"] and bestscore[e] != -1 and bestinfty[e] <= o_bestinfty[e]:
+                        # success
+                        u_two[e] = min(u_two[e], BOUND_BALL_TWO[e][0][0])
+                        BOUND_BALL_TWO[e] = np.ones_like(
+                            BOUND_BALL_TWO[e]) * ((i_two[e] + u_two[e]) / 2)
+                        # print('new result found!')
+                    else:
+                        # failure
+                        i_two[e] = max(i_two[e], BOUND_BALL_TWO[e][0][0])
+                        BOUND_BALL_TWO[e] = np.ones_like(
+                            BOUND_BALL_TWO[e]) * ((i_two[e] + u_two[e]) / 2)
         # #besttwo_prev=deepcopy(besttwo)
 
                 # adjust the constant ALPHA as needed
@@ -748,15 +762,10 @@ if __name__=='__main__':
     victims_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     # victims_list = [35]
     targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-    # targets_list = targets_list[setup["target"]::]
-    targets_list = [setup["target"]]
-
-
-
     # targets_list = [0]
     # targets_list = [5,0,35]
     if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
-        targets_list = [-1]
+        targets_list = [100]
         
 
 
@@ -772,8 +781,6 @@ if __name__=='__main__':
     elif setup["phase"] == "all":
         log_setup(setup, setup["setups_file"])
         results = attack(setup,models, targets_list, victims_list)
-        # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
-        # targets_list = targets_list[setup["target"]]
         ev_results = evaluate(setup, results,models, targets_list, victims_list)
     else :
         print("unkown phase")

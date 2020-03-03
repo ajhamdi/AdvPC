@@ -37,13 +37,13 @@ parser.add_argument('--phase', type=str, default='attack', choices=['attack', 'e
 parser.add_argument('--exp_id', type=str, default='random',help='pick ')
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 # parser.add_argument('--model', default='pointnet_cls_w_ae', help='Model name: pointnet_cls or pointnet_cls_basic [default: pointnet_cls]')
-parser.add_argument('--network', default='PN', choices=['PN', 'PN1', 'PN2',"GCN"], 
-    help='the network used to perform the attack , PN1: POintNet , PN2 : POinNEt ++ , PN3: POneNet++ w/ 2 scales , GCN : DCGCN network   ')
+parser.add_argument('--network', default='PN', choices=['PN', 'PN1', 'PN2', "GCN", "GCN1", "GCN2", "GCN3"],
+    help='the network used to perform the attack , PN1: POintNet , PN2 : POinNEt ++ , PN3: POneNet++ w/ 2 scales , GCN : DCGCN network , GCN1: less trained GCN ... etc   ')
 # parser.add_argument('--log_dir', default='log', help='Log dir [default: log]')
 parser.add_argument('--batch_size', type=int, default=5, help='Batch Size for attack [default: 5]')
 parser.add_argument('--num_point', type=int, default=1024, help='Point Number [256/512/1024/2048] [default: 1024]')
 parser.add_argument('--data_dir', default='data', help='data folder path [data]')
-parser.add_argument('--dump_dir', default='ablation', help='dump folder path [perturbation]')
+parser.add_argument('--dump_dir', default='sensitivity', help='dump folder path [perturbation]')
 
 parser.add_argument('--evaluation_mode', type=int, default=0,
                     help='the int type of evaluation mode : 0: regukar targeted attack  .. 1: relativisitic loss targeteed attack   2:regular untargeted attack  3: relativisitic untargeted attack   ')

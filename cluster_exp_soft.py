@@ -22,21 +22,21 @@ def generate_soft_setup(cluster_nb=0):
     cluster_setup = []
     networks_list = ["PN", "PN1", "PN2", "GCN"]
     iterations_list = [500, 500, 500, 700]
+    targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     for network, iteration in zip(networks_list, iterations_list):
-        for ii in [(1, 0, 0), (0, 1, 0), (0, 0, 1)]:
-            beta_cham = ii[0]
-            beta_two = ii[1]
-            beta_emd = ii[2]
-            cluster_setup.append(
-                (network, beta_cham, beta_two, beta_emd, iteration))
-    return cluster_setup[cluster_nb]  # len(cluster_setup) = 160
+        for target in targets_list:
+            for ii in [(1, 0, 0), (0, 1, 0), (0, 0, 1)]:
+                beta_cham = ii[0]
+                beta_two = ii[1]
+                beta_emd = ii[2]
+                cluster_setup.append((target,network, beta_cham, beta_two, beta_emd, iteration))
+    return cluster_setup[cluster_nb]  # len(cluster_setup) = 120
 
 
 if __name__ == '__main__':
     FLAGS = parser.parse_args()
-    (network, beta_cham, beta_two, beta_emd,
-     iteration) = generate_soft_setup(FLAGS.cluster_nb)
-    command = "python natural.py --phase all --cluster_nb={} --gpu={} --network {} --evaluation_mode=0 --unnecessary=1 --initial_alpha=0 --step={} --batch_size=5 --num_iter={} --lr_attack=0.01 --initial_weight=10 --gamma={} --beta_infty=0 --beta_cham={} --beta_emd={} --beta_two={} --hard_bound_mode=0 --dyn_bound_mode=0 --b_two=20 --b_infty=2 --s_infty=0.2 --u_two=20 --u_infty=2".format(
-        FLAGS.cluster_nb, FLAGS.gpu, network, FLAGS.step, iteration,
+    (target,network, beta_cham, beta_two, beta_emd,iteration) = generate_soft_setup(FLAGS.cluster_nb)
+    command = "python fix.py --phase all --target={} --cluster_nb={} --gpu={} --network {} --evaluation_mode=0 --unnecessary=1 --initial_alpha=0 --step={} --batch_size=5 --num_iter={} --lr_attack=0.01 --initial_weight=10 --gamma={} --beta_infty=0 --beta_cham={} --beta_emd={} --beta_two={} --hard_bound_mode=0 --dyn_bound_mode=0 --b_two=20 --b_infty=2 --s_infty=0.2 --u_two=20 --u_infty=2".format(
+        target,FLAGS.cluster_nb, FLAGS.gpu, network, FLAGS.step, iteration,
         FLAGS.gamma, beta_cham,beta_emd,beta_two)
     os.system(command)
