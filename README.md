@@ -1,7 +1,7 @@
 # Generating natural 3D Adversarial Point Clouds
 By [Abdullah Hamdi, Sara Rojas , Ali Thabet](),
 
-Sample code for CVPR 2020 paper "NatAttk: Natural 3D Adversarial Point Clouds" [arXiv](https://arxiv.org/abs/1809.07016)
+Sample code for ECCV 2020 paper "[NatAttk: Natural 3D Adversarial Point Clouds](https://arxiv.org/abs/1912.00461)"
 
 <img src="https://github.com/xiangchong1/test/blob/master/doc/attack_pipeline.png" width="50%" alt="attack pipeline" align=center>
 
