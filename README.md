@@ -1,5 +1,5 @@
-# AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds
-By [Abdullah Hamdi, Sara Rojas , Ali Thabet](),
+# AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds (ECCV 2020)
+By [Abdullah Hamdi](https://abdullahamdi.com/), Sara Rojas , Ali Thabet, [Bernard Ghanem](http://www.bernardghanem.com/)
 
 official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds](https://arxiv.org/abs/1912.00461)"
 
