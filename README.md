@@ -1,7 +1,7 @@
-# Generating natural 3D Adversarial Point Clouds
+# AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds
 By [Abdullah Hamdi, Sara Rojas , Ali Thabet](),
 
-Sample code for ECCV 2020 paper "[NatAttk: Natural 3D Adversarial Point Clouds](https://arxiv.org/abs/1912.00461)"
+official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds](https://arxiv.org/abs/1912.00461)"
 
 <img src="https://github.com/xiangchong1/test/blob/master/doc/attack_pipeline.png" width="50%" alt="attack pipeline" align=center>
 
