@@ -5,6 +5,18 @@ official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations
 
 <img src="https://github.com/xiangchong1/test/blob/master/doc/attack_pipeline.png" width="50%" alt="attack pipeline" align=center>
 
+## Citation
+If you find our work useful in your research, please consider citing:
+```
+@article{hamdi2020advpc,
+  title={AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds},
+  author={Abdullah Hamdi and Sara Rojas and Ali Thabet and Bernard Ghanem},
+  journal={ECCV},
+  year={2020}
+}
+```
+
+
 ## Requirement
 This code is tested with Python 2.7 and Tensorflow 1.10.0
 
@@ -47,3 +59,11 @@ Other parameters can be founded in the script, or run `python perturbation.py -h
 - The aligned version of ModelNet40 data (in point cloud data format) can be downloaded [here](https://drive.google.com/open?id=1m7BmdtX1vWrpl9WRX5Ds2qnIeJHKmE36).
 - The visulization in the paper is rendered with MeshLab
 - Please open an issue or contact Abdullah Hamdi (abdullah.hamdi@kaust.edu.sa) if there is any question.
+
+## Acknoledgements
+This paper and repo borrows codes and ideas from several great github repos:
+- [latent 3D point clouds](https://github.com/optas/latent_3d_points) 
+- [3d-adv-pc](https://github.com/xiangchong1/3d-adv-pc)
+
+## License
+The code is released under MIT License (see LICENSE file for details).
