@@ -32,8 +32,18 @@ Other parameters can be founded in the script, or run `python perturbation.py -h
 - data/airplane.py -- the airplane object used in the paper as a uav for the adversarial object. can be loaded with ```np.load```.
 - utils/tf_nndistance -- a self-defined tensorlfow op used for Chamfer/Hausdorff distance calculation. Use tf_nndistance_compile.sh to compile the op. The bash code may need modification according to the version and installtion path of CUDA. Note that it should be OK to directly calculate Chamfer/Hausdorff distance with available tf ops instead of tf_nndistance.
 
+## compiling tf_ops C++ libraries 
+- conda create -n NAME python=2.7 anaconda
+- conda activate NAME
+- conda install tensorflow-gpu=1.10.0
+- conda install -c anaconda cudatoolkit==9
+-  make sure everything is there nvcc --version / gcc --version / whereis nvcc
+- look for TF paths python -c 'import tensorflow as tf; print(tf.sysconfig.get_lib() + "/python/_pywrap_tensorflow_internal.so")' | xargs lddpython -c 'import tensorflow as tf; print(tf.sysconfig.get_lib() + "/python/_pywrap_tensorflow_internal.so")' | xargs ldd
+- change paths in the makefile file
+- run `make` 
+
 ## Misc
 - The sample adversarial point clouds can be downloaded [here](https://drive.google.com/open?id=1KLtJXFpq70YkB2DAxfUYyrWcv8kbkUJd). The targeted model is log/model.ckpt
 - The aligned version of ModelNet40 data (in point cloud data format) can be downloaded [here](https://drive.google.com/open?id=1m7BmdtX1vWrpl9WRX5Ds2qnIeJHKmE36).
 - The visulization in the paper is rendered with MeshLab
-- Please open an issue or contact Chong Xiang (xiangchong97@gmail.com) if there is any question.
+- Please open an issue or contact Abdullah Hamdi (abdullah.hamdi@kaust.edu.sa) if there is any question.
