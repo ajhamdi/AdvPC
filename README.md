@@ -9,7 +9,7 @@ official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations
 If you find our work useful in your research, please consider citing:
 ```
 @article{hamdi2020advpc,
-  title={A Closer Look at Local Aggregation Operators in Point Cloud Analysis},
+  title={AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds},
   author={Abdullah Hamdi and Sara Rojas and Ali Thabet and Bernard Ghanem},
   journal={ECCV},
   year={2020}
