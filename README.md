@@ -47,3 +47,8 @@ Other parameters can be founded in the script, or run `python perturbation.py -h
 - The aligned version of ModelNet40 data (in point cloud data format) can be downloaded [here](https://drive.google.com/open?id=1m7BmdtX1vWrpl9WRX5Ds2qnIeJHKmE36).
 - The visulization in the paper is rendered with MeshLab
 - Please open an issue or contact Abdullah Hamdi (abdullah.hamdi@kaust.edu.sa) if there is any question.
+
+## Acknoledgements
+This paper and repo borrows codes and ideas from several great github repos:
+- [latent 3D point clouds](https://github.com/optas/latent_3d_points) 
+- [3d-adv-pc](https://github.com/xiangchong1/3d-adv-pc)
