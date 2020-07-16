@@ -1,0 +1,1118 @@
+{'setups_file': 'natural/LIT7/../setups.csv', 'u_infty': 0.362, 'dump_dir': 'natural/LIT7', 'bn_decat_clip_at': 0.99, 'results_file': 'natural/LIT7/LIT7_full.csv', 'decay_step_at': 200000, 'sor': 1.1, 'b_two': 0.2, 'victim': 0, 'learning_rate_at': 0.001, 'num_point': 1024, 'optimizer_at': 'adam', 'data_dir': 'data', 'network': 'PN', 's_infty': 0.2, 'max_epoch_at': 100, 'beta_emd': 0.0, 'batch_size_at': 32, 'bn_decay_decay_rate_at': 0.5, 'bn_init_decay_at': 0.5, 'bn_decay_decay_step_at': 200000.0, 'gpu': 0, 'lr_attack': 0.005, 'evaluation_mode': 0, 'initial_alpha': 0, 'load_file': 'natural/LIT7/LIT7.csv', 'dyn_bound_mode': 0, 'upper_bound_weight': 80, 'batch_read': 5, 'batch_size': 5, 'step': 5, 'phase': 'advtraining', 'exp_id': 'LIT7', 'hard_bound_mode': 0, 'beta_infty': 0.0, 'momentum_at': 0.9, 'target': 5, 'save_file': 'natural/LIT7/LIT7.csv', 'u_two': 0.362, 'unnecessary': 0, 'num_iter': 500, 'srs': 0.1, 'beta_cham': 0.0, 'b_infty': 0.2, 'decay_rate_at': 0.7, 'initial_weight': 10, 'beta_two': 1, 'gamma': 0}
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.597248
+eval accuracy: 0.887175
+eval avg class acc: 0.855318
+----TEST ON ATTACKED DATA-----
+eval mean loss: 1.330328
+eval accuracy: 0.000000
+**** EPOCH 000 ****
+----TRAIN-----
+mean loss: 5.943819
+accuracy: 0.355769
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.870377
+eval accuracy: 0.850244
+eval avg class acc: 0.802263
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.788080
+eval accuracy: 0.804911
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 001 ****
+----TRAIN-----
+mean loss: 4.486230
+accuracy: 0.424569
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.913565
+eval accuracy: 0.834821
+eval avg class acc: 0.778163
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.802642
+eval accuracy: 0.800893
+**** EPOCH 002 ****
+----TRAIN-----
+mean loss: 3.872097
+accuracy: 0.448856
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.919467
+eval accuracy: 0.831575
+eval avg class acc: 0.768796
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.816973
+eval accuracy: 0.809375
+**** EPOCH 003 ****
+----TRAIN-----
+mean loss: 3.462209
+accuracy: 0.479194
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.944637
+eval accuracy: 0.824269
+eval avg class acc: 0.760945
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.788477
+eval accuracy: 0.813839
+**** EPOCH 004 ****
+----TRAIN-----
+mean loss: 3.226912
+accuracy: 0.496436
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.946832
+eval accuracy: 0.825081
+eval avg class acc: 0.757358
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.776917
+eval accuracy: 0.822321
+**** EPOCH 005 ****
+----TRAIN-----
+mean loss: 2.970119
+accuracy: 0.522381
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.938441
+eval accuracy: 0.818182
+eval avg class acc: 0.750920
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.761995
+eval accuracy: 0.826786
+**** EPOCH 006 ****
+----TRAIN-----
+mean loss: 2.787465
+accuracy: 0.526359
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.948138
+eval accuracy: 0.819399
+eval avg class acc: 0.756720
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.760069
+eval accuracy: 0.827232
+**** EPOCH 007 ****
+----TRAIN-----
+mean loss: 2.715459
+accuracy: 0.542275
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.942005
+eval accuracy: 0.812500
+eval avg class acc: 0.747332
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.719407
+eval accuracy: 0.830357
+**** EPOCH 008 ****
+----TRAIN-----
+mean loss: 2.543684
+accuracy: 0.556366
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.947214
+eval accuracy: 0.813312
+eval avg class acc: 0.746914
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.720426
+eval accuracy: 0.833929
+**** EPOCH 009 ****
+----TRAIN-----
+mean loss: 2.445091
+accuracy: 0.562666
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.933709
+eval accuracy: 0.808442
+eval avg class acc: 0.746629
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.704730
+eval accuracy: 0.833929
+**** EPOCH 010 ****
+----TRAIN-----
+mean loss: 2.368694
+accuracy: 0.566313
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.936025
+eval accuracy: 0.805601
+eval avg class acc: 0.743879
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.667020
+eval accuracy: 0.841964
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 011 ****
+----TRAIN-----
+mean loss: 2.361625
+accuracy: 0.561754
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.968371
+eval accuracy: 0.798701
+eval avg class acc: 0.738763
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.681373
+eval accuracy: 0.835714
+**** EPOCH 012 ****
+----TRAIN-----
+mean loss: 2.250115
+accuracy: 0.574271
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.915881
+eval accuracy: 0.803977
+eval avg class acc: 0.745507
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.661194
+eval accuracy: 0.841518
+**** EPOCH 013 ****
+----TRAIN-----
+mean loss: 2.193556
+accuracy: 0.576923
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.923601
+eval accuracy: 0.802760
+eval avg class acc: 0.745757
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.639268
+eval accuracy: 0.845536
+**** EPOCH 014 ****
+----TRAIN-----
+mean loss: 2.122999
+accuracy: 0.586290
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.900564
+eval accuracy: 0.805195
+eval avg class acc: 0.747507
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.629821
+eval accuracy: 0.847321
+**** EPOCH 015 ****
+----TRAIN-----
+mean loss: 2.081498
+accuracy: 0.590186
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.884988
+eval accuracy: 0.804789
+eval avg class acc: 0.746420
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.630988
+eval accuracy: 0.845536
+**** EPOCH 016 ****
+----TRAIN-----
+mean loss: 2.006648
+accuracy: 0.594496
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.868158
+eval accuracy: 0.807224
+eval avg class acc: 0.750920
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.614509
+eval accuracy: 0.841964
+**** EPOCH 017 ****
+----TRAIN-----
+mean loss: 1.936658
+accuracy: 0.601210
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.867340
+eval accuracy: 0.804383
+eval avg class acc: 0.747047
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.610824
+eval accuracy: 0.843750
+**** EPOCH 018 ****
+----TRAIN-----
+mean loss: 1.899061
+accuracy: 0.602868
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.869083
+eval accuracy: 0.804789
+eval avg class acc: 0.746272
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.580237
+eval accuracy: 0.853125
+**** EPOCH 019 ****
+----TRAIN-----
+mean loss: 1.853377
+accuracy: 0.609168
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.848893
+eval accuracy: 0.807630
+eval avg class acc: 0.754144
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.556648
+eval accuracy: 0.855357
+**** EPOCH 020 ****
+----TRAIN-----
+mean loss: 1.820780
+accuracy: 0.608090
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.862494
+eval accuracy: 0.804789
+eval avg class acc: 0.749272
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.537115
+eval accuracy: 0.860268
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 021 ****
+----TRAIN-----
+mean loss: 1.807136
+accuracy: 0.611406
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.841820
+eval accuracy: 0.806818
+eval avg class acc: 0.751650
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.536466
+eval accuracy: 0.856250
+**** EPOCH 022 ****
+----TRAIN-----
+mean loss: 1.759478
+accuracy: 0.618700
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.834767
+eval accuracy: 0.807630
+eval avg class acc: 0.753150
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.552425
+eval accuracy: 0.853125
+**** EPOCH 023 ****
+----TRAIN-----
+mean loss: 1.746896
+accuracy: 0.616628
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.837301
+eval accuracy: 0.807630
+eval avg class acc: 0.753134
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.540273
+eval accuracy: 0.856696
+**** EPOCH 024 ****
+----TRAIN-----
+mean loss: 1.694360
+accuracy: 0.625166
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.834188
+eval accuracy: 0.809253
+eval avg class acc: 0.755068
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.524402
+eval accuracy: 0.859375
+**** EPOCH 025 ****
+----TRAIN-----
+mean loss: 1.642637
+accuracy: 0.628896
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.835287
+eval accuracy: 0.807224
+eval avg class acc: 0.751793
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.516310
+eval accuracy: 0.863839
+**** EPOCH 026 ****
+----TRAIN-----
+mean loss: 1.633125
+accuracy: 0.625663
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.817693
+eval accuracy: 0.811688
+eval avg class acc: 0.759568
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.515437
+eval accuracy: 0.862054
+**** EPOCH 027 ****
+----TRAIN-----
+mean loss: 1.631455
+accuracy: 0.632377
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.816146
+eval accuracy: 0.808036
+eval avg class acc: 0.754252
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.502468
+eval accuracy: 0.866964
+**** EPOCH 028 ****
+----TRAIN-----
+mean loss: 1.586419
+accuracy: 0.632626
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.787699
+eval accuracy: 0.814529
+eval avg class acc: 0.760706
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.483005
+eval accuracy: 0.869196
+**** EPOCH 029 ****
+----TRAIN-----
+mean loss: 1.559427
+accuracy: 0.638926
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.804844
+eval accuracy: 0.807630
+eval avg class acc: 0.755150
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.478424
+eval accuracy: 0.868750
+**** EPOCH 030 ****
+----TRAIN-----
+mean loss: 1.522530
+accuracy: 0.645391
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.782504
+eval accuracy: 0.814935
+eval avg class acc: 0.759119
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.498618
+eval accuracy: 0.864732
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 031 ****
+----TRAIN-----
+mean loss: 1.511300
+accuracy: 0.637765
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.787720
+eval accuracy: 0.813312
+eval avg class acc: 0.762037
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.472281
+eval accuracy: 0.874107
+**** EPOCH 032 ****
+----TRAIN-----
+mean loss: 1.493619
+accuracy: 0.645474
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.779799
+eval accuracy: 0.810065
+eval avg class acc: 0.758994
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.465635
+eval accuracy: 0.870089
+**** EPOCH 033 ****
+----TRAIN-----
+mean loss: 1.485041
+accuracy: 0.643568
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.785206
+eval accuracy: 0.811282
+eval avg class acc: 0.760562
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.453462
+eval accuracy: 0.876786
+**** EPOCH 034 ****
+----TRAIN-----
+mean loss: 1.442288
+accuracy: 0.644728
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.766421
+eval accuracy: 0.814529
+eval avg class acc: 0.763850
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.444299
+eval accuracy: 0.884375
+**** EPOCH 035 ****
+----TRAIN-----
+mean loss: 1.447021
+accuracy: 0.649950
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.775124
+eval accuracy: 0.813718
+eval avg class acc: 0.763353
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.434475
+eval accuracy: 0.881696
+**** EPOCH 036 ****
+----TRAIN-----
+mean loss: 1.411245
+accuracy: 0.654841
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.770238
+eval accuracy: 0.813718
+eval avg class acc: 0.761432
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.439645
+eval accuracy: 0.880357
+**** EPOCH 037 ****
+----TRAIN-----
+mean loss: 1.424260
+accuracy: 0.653432
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.762318
+eval accuracy: 0.811282
+eval avg class acc: 0.761650
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.437789
+eval accuracy: 0.878571
+**** EPOCH 038 ****
+----TRAIN-----
+mean loss: 1.371144
+accuracy: 0.654924
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.774891
+eval accuracy: 0.811688
+eval avg class acc: 0.761019
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.408129
+eval accuracy: 0.892411
+**** EPOCH 039 ****
+----TRAIN-----
+mean loss: 1.342516
+accuracy: 0.662135
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.769187
+eval accuracy: 0.810065
+eval avg class acc: 0.759900
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.400097
+eval accuracy: 0.895089
+**** EPOCH 040 ****
+----TRAIN-----
+mean loss: 1.336950
+accuracy: 0.662881
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.761439
+eval accuracy: 0.809659
+eval avg class acc: 0.759647
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.404820
+eval accuracy: 0.891071
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 041 ****
+----TRAIN-----
+mean loss: 1.333621
+accuracy: 0.662052
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.754902
+eval accuracy: 0.808442
+eval avg class acc: 0.757831
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.422068
+eval accuracy: 0.890625
+**** EPOCH 042 ****
+----TRAIN-----
+mean loss: 1.330308
+accuracy: 0.664788
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.742088
+eval accuracy: 0.809659
+eval avg class acc: 0.760728
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.418664
+eval accuracy: 0.885268
+**** EPOCH 043 ****
+----TRAIN-----
+mean loss: 1.301475
+accuracy: 0.671253
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.750833
+eval accuracy: 0.812094
+eval avg class acc: 0.761938
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.415944
+eval accuracy: 0.887500
+**** EPOCH 044 ****
+----TRAIN-----
+mean loss: 1.318394
+accuracy: 0.666363
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.746228
+eval accuracy: 0.810065
+eval avg class acc: 0.762897
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.415103
+eval accuracy: 0.889286
+**** EPOCH 045 ****
+----TRAIN-----
+mean loss: 1.318412
+accuracy: 0.667026
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.748996
+eval accuracy: 0.816558
+eval avg class acc: 0.770060
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.392137
+eval accuracy: 0.894196
+**** EPOCH 046 ****
+----TRAIN-----
+mean loss: 1.267157
+accuracy: 0.675232
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.746804
+eval accuracy: 0.814529
+eval avg class acc: 0.762478
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.411527
+eval accuracy: 0.890179
+**** EPOCH 047 ****
+----TRAIN-----
+mean loss: 1.269884
+accuracy: 0.671916
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.727972
+eval accuracy: 0.816558
+eval avg class acc: 0.762688
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.396505
+eval accuracy: 0.896875
+**** EPOCH 048 ****
+----TRAIN-----
+mean loss: 1.259283
+accuracy: 0.670010
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.739050
+eval accuracy: 0.814935
+eval avg class acc: 0.766019
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.391770
+eval accuracy: 0.894196
+**** EPOCH 049 ****
+----TRAIN-----
+mean loss: 1.257976
+accuracy: 0.671668
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.737373
+eval accuracy: 0.812500
+eval avg class acc: 0.762478
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.390340
+eval accuracy: 0.895982
+**** EPOCH 050 ****
+----TRAIN-----
+mean loss: 1.239020
+accuracy: 0.677304
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.722181
+eval accuracy: 0.812906
+eval avg class acc: 0.763650
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.383186
+eval accuracy: 0.895982
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 051 ****
+----TRAIN-----
+mean loss: 1.246168
+accuracy: 0.677387
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.731538
+eval accuracy: 0.817776
+eval avg class acc: 0.765744
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.380174
+eval accuracy: 0.901339
+**** EPOCH 052 ****
+----TRAIN-----
+mean loss: 1.238390
+accuracy: 0.676641
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.735676
+eval accuracy: 0.814935
+eval avg class acc: 0.765663
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.391245
+eval accuracy: 0.895536
+**** EPOCH 053 ****
+----TRAIN-----
+mean loss: 1.174894
+accuracy: 0.682941
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.730788
+eval accuracy: 0.815747
+eval avg class acc: 0.763478
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.373359
+eval accuracy: 0.903571
+**** EPOCH 054 ****
+----TRAIN-----
+mean loss: 1.215097
+accuracy: 0.680123
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.732671
+eval accuracy: 0.815341
+eval avg class acc: 0.762978
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.386788
+eval accuracy: 0.897321
+**** EPOCH 055 ****
+----TRAIN-----
+mean loss: 1.175874
+accuracy: 0.684267
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.716176
+eval accuracy: 0.815341
+eval avg class acc: 0.763122
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.390446
+eval accuracy: 0.899107
+**** EPOCH 056 ****
+----TRAIN-----
+mean loss: 1.181983
+accuracy: 0.688246
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.719115
+eval accuracy: 0.815747
+eval avg class acc: 0.764081
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.383022
+eval accuracy: 0.899107
+**** EPOCH 057 ****
+----TRAIN-----
+mean loss: 1.177885
+accuracy: 0.690981
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.706739
+eval accuracy: 0.818588
+eval avg class acc: 0.768356
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.374313
+eval accuracy: 0.902232
+**** EPOCH 058 ****
+----TRAIN-----
+mean loss: 1.159805
+accuracy: 0.693800
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.709890
+eval accuracy: 0.819399
+eval avg class acc: 0.769647
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.369060
+eval accuracy: 0.904911
+**** EPOCH 059 ****
+----TRAIN-----
+mean loss: 1.167048
+accuracy: 0.685013
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.704161
+eval accuracy: 0.818994
+eval avg class acc: 0.768685
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.366851
+eval accuracy: 0.904464
+**** EPOCH 060 ****
+----TRAIN-----
+mean loss: 1.156635
+accuracy: 0.689821
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.696392
+eval accuracy: 0.820617
+eval avg class acc: 0.771329
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.371758
+eval accuracy: 0.902679
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 061 ****
+----TRAIN-----
+mean loss: 1.118964
+accuracy: 0.693634
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.705705
+eval accuracy: 0.818182
+eval avg class acc: 0.768854
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.357557
+eval accuracy: 0.905804
+**** EPOCH 062 ****
+----TRAIN-----
+mean loss: 1.142084
+accuracy: 0.691645
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.701478
+eval accuracy: 0.819805
+eval avg class acc: 0.769892
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.356862
+eval accuracy: 0.907589
+**** EPOCH 063 ****
+----TRAIN-----
+mean loss: 1.121301
+accuracy: 0.698276
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.699464
+eval accuracy: 0.818994
+eval avg class acc: 0.769522
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.363937
+eval accuracy: 0.904464
+**** EPOCH 064 ****
+----TRAIN-----
+mean loss: 1.119239
+accuracy: 0.696286
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.701043
+eval accuracy: 0.819805
+eval avg class acc: 0.770900
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.359346
+eval accuracy: 0.904464
+**** EPOCH 065 ****
+----TRAIN-----
+mean loss: 1.118145
+accuracy: 0.694131
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.708601
+eval accuracy: 0.818588
+eval avg class acc: 0.766228
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.354267
+eval accuracy: 0.907143
+**** EPOCH 066 ****
+----TRAIN-----
+mean loss: 1.108276
+accuracy: 0.697861
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.698223
+eval accuracy: 0.814935
+eval avg class acc: 0.765831
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.343648
+eval accuracy: 0.909821
+**** EPOCH 067 ****
+----TRAIN-----
+mean loss: 1.091502
+accuracy: 0.703166
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.703158
+eval accuracy: 0.818588
+eval avg class acc: 0.769038
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.343336
+eval accuracy: 0.908929
+**** EPOCH 068 ****
+----TRAIN-----
+mean loss: 1.063280
+accuracy: 0.701757
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.693367
+eval accuracy: 0.818182
+eval avg class acc: 0.764953
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.336150
+eval accuracy: 0.912946
+**** EPOCH 069 ****
+----TRAIN-----
+mean loss: 1.075450
+accuracy: 0.701177
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.693494
+eval accuracy: 0.823458
+eval avg class acc: 0.774203
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.335084
+eval accuracy: 0.913839
+**** EPOCH 070 ****
+----TRAIN-----
+mean loss: 1.045071
+accuracy: 0.706399
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.689977
+eval accuracy: 0.821834
+eval avg class acc: 0.770241
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.329449
+eval accuracy: 0.910268
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 071 ****
+----TRAIN-----
+mean loss: 1.042612
+accuracy: 0.704410
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.687006
+eval accuracy: 0.822240
+eval avg class acc: 0.770372
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.345554
+eval accuracy: 0.906250
+**** EPOCH 072 ****
+----TRAIN-----
+mean loss: 1.031339
+accuracy: 0.715683
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.694485
+eval accuracy: 0.821429
+eval avg class acc: 0.768994
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.333556
+eval accuracy: 0.914286
+**** EPOCH 073 ****
+----TRAIN-----
+mean loss: 1.051647
+accuracy: 0.708720
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.693610
+eval accuracy: 0.825487
+eval avg class acc: 0.770494
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.320633
+eval accuracy: 0.916071
+**** EPOCH 074 ****
+----TRAIN-----
+mean loss: 1.039077
+accuracy: 0.709466
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.685550
+eval accuracy: 0.823458
+eval avg class acc: 0.773163
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.342682
+eval accuracy: 0.907143
+**** EPOCH 075 ****
+----TRAIN-----
+mean loss: 1.060431
+accuracy: 0.704990
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.690508
+eval accuracy: 0.821429
+eval avg class acc: 0.769872
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.315729
+eval accuracy: 0.916964
+**** EPOCH 076 ****
+----TRAIN-----
+mean loss: 1.048111
+accuracy: 0.706151
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.677565
+eval accuracy: 0.822646
+eval avg class acc: 0.772663
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.333238
+eval accuracy: 0.910714
+**** EPOCH 077 ****
+----TRAIN-----
+mean loss: 1.039226
+accuracy: 0.706897
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.682064
+eval accuracy: 0.821429
+eval avg class acc: 0.770913
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.326400
+eval accuracy: 0.912500
+**** EPOCH 078 ****
+----TRAIN-----
+mean loss: 1.060183
+accuracy: 0.707891
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.687333
+eval accuracy: 0.821429
+eval avg class acc: 0.769872
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.330328
+eval accuracy: 0.911161
+**** EPOCH 079 ****
+----TRAIN-----
+mean loss: 1.026094
+accuracy: 0.713777
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.672655
+eval accuracy: 0.825893
+eval avg class acc: 0.774703
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.329840
+eval accuracy: 0.913839
+**** EPOCH 080 ****
+----TRAIN-----
+mean loss: 1.023131
+accuracy: 0.711787
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.686974
+eval accuracy: 0.820211
+eval avg class acc: 0.769765
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.325905
+eval accuracy: 0.909375
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 081 ****
+----TRAIN-----
+mean loss: 1.024919
+accuracy: 0.710378
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.683739
+eval accuracy: 0.826705
+eval avg class acc: 0.774913
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.325546
+eval accuracy: 0.908482
+**** EPOCH 082 ****
+----TRAIN-----
+mean loss: 1.003774
+accuracy: 0.718584
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.676962
+eval accuracy: 0.825081
+eval avg class acc: 0.771138
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.327538
+eval accuracy: 0.908482
+**** EPOCH 083 ****
+----TRAIN-----
+mean loss: 1.002090
+accuracy: 0.718916
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.670512
+eval accuracy: 0.828328
+eval avg class acc: 0.776097
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.328010
+eval accuracy: 0.908929
+**** EPOCH 084 ****
+----TRAIN-----
+mean loss: 0.999708
+accuracy: 0.720739
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.674972
+eval accuracy: 0.825893
+eval avg class acc: 0.772597
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.320702
+eval accuracy: 0.908929
+**** EPOCH 085 ****
+----TRAIN-----
+mean loss: 1.036227
+accuracy: 0.713611
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.676874
+eval accuracy: 0.825487
+eval avg class acc: 0.773281
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.314821
+eval accuracy: 0.914286
+**** EPOCH 086 ****
+----TRAIN-----
+mean loss: 0.969424
+accuracy: 0.722977
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.680114
+eval accuracy: 0.827516
+eval avg class acc: 0.776347
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.320461
+eval accuracy: 0.910268
+**** EPOCH 087 ****
+----TRAIN-----
+mean loss: 0.994068
+accuracy: 0.720325
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.671184
+eval accuracy: 0.824675
+eval avg class acc: 0.772678
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.326477
+eval accuracy: 0.913393
+**** EPOCH 088 ****
+----TRAIN-----
+mean loss: 0.996491
+accuracy: 0.719413
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.670841
+eval accuracy: 0.824675
+eval avg class acc: 0.774622
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.321745
+eval accuracy: 0.913393
+**** EPOCH 089 ****
+----TRAIN-----
+mean loss: 0.983611
+accuracy: 0.718999
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.672883
+eval accuracy: 0.825487
+eval avg class acc: 0.777015
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.323147
+eval accuracy: 0.912054
+**** EPOCH 090 ****
+----TRAIN-----
+mean loss: 0.978941
+accuracy: 0.722231
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.665885
+eval accuracy: 0.826705
+eval avg class acc: 0.775806
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.321079
+eval accuracy: 0.911607
+Model saved in file: /home/rojass/pointcloudattacks/log/PN/LIT7/model.ckpt
+**** EPOCH 091 ****
+----TRAIN-----
+mean loss: 0.957030
+accuracy: 0.728531
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.665569
+eval accuracy: 0.826705
+eval avg class acc: 0.775969
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.316112
+eval accuracy: 0.910714
+**** EPOCH 092 ****
+----TRAIN-----
+mean loss: 0.963329
+accuracy: 0.724552
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.662134
+eval accuracy: 0.828734
+eval avg class acc: 0.780173
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.315703
+eval accuracy: 0.908482
+**** EPOCH 093 ****
+----TRAIN-----
+mean loss: 0.951633
+accuracy: 0.728117
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.662062
+eval accuracy: 0.826705
+eval avg class acc: 0.775969
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.304134
+eval accuracy: 0.915179
+**** EPOCH 094 ****
+----TRAIN-----
+mean loss: 0.970760
+accuracy: 0.730935
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.662930
+eval accuracy: 0.826299
+eval avg class acc: 0.777638
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.292910
+eval accuracy: 0.916964
+**** EPOCH 095 ****
+----TRAIN-----
+mean loss: 0.961795
+accuracy: 0.724387
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.653287
+eval accuracy: 0.831169
+eval avg class acc: 0.782841
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.310608
+eval accuracy: 0.913393
+**** EPOCH 096 ****
+----TRAIN-----
+mean loss: 0.944964
+accuracy: 0.726459
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.655669
+eval accuracy: 0.827922
+eval avg class acc: 0.776703
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.307951
+eval accuracy: 0.910714
+**** EPOCH 097 ****
+----TRAIN-----
+mean loss: 0.944629
+accuracy: 0.725713
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.662296
+eval accuracy: 0.827516
+eval avg class acc: 0.774388
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.309146
+eval accuracy: 0.913839
+**** EPOCH 098 ****
+----TRAIN-----
+mean loss: 0.944390
+accuracy: 0.730272
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.667315
+eval accuracy: 0.826705
+eval avg class acc: 0.777005
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.298355
+eval accuracy: 0.916518
+**** EPOCH 099 ****
+----TRAIN-----
+mean loss: 0.936571
+accuracy: 0.735328
+----TEST ON ORIGINAL DATA-----
+eval mean loss: 0.661524
+eval accuracy: 0.829545
+eval avg class acc: 0.779780
+----TEST ON ATTACKED DATA-----
+eval mean loss: 0.297480
+eval accuracy: 0.917857

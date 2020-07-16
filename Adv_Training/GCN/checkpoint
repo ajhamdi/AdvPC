@@ -1,0 +1,2 @@
+model_checkpoint_path: "/home/rojass/pointcloudattacks/log/GCN/QOJI/model.ckpt"
+all_model_checkpoint_paths: "/home/rojass/pointcloudattacks/log/GCN/QOJI/model.ckpt"

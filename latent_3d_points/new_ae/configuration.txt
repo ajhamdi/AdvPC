@@ -1,0 +1,23 @@
+                    batch_size: 50
+                 consistent_io: None
+                         debug: False
+                       decoder: decoder_with_fc_only
+                  decoder_args: {'b_norm_finish': False, 'verbose': True, 'b_norm': False, 'layer_sizes': [256, 256, 3072]}
+                       encoder: encoder_with_convs_and_symmetry
+                  encoder_args: {'filter_sizes': [1], 'n_filters': [64, 128, 128, 256, 128], 'verbose': True, 'b_norm': True, 'strides': [1]}
+               experiment_name: new_ae
+                 gauss_augment: None
+                 held_out_step: 5
+                  is_denoising: False
+               latent_vs_recon: 1.0
+                 learning_rate: 0.0005
+                          loss: chamfer
+             loss_display_step: 1
+                       n_input: [1024, 3]
+                      n_output: [1024, 3]
+                           n_z: None
+             saver_max_to_keep: None
+                    saver_step: 10
+                     train_dir: /home/hamdiaj/notebooks/learning_torch/data/3d-adv-pc/latent_3d_points/data/new_ae
+               training_epochs: 500
+                      z_rotate: False
