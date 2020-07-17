@@ -35,7 +35,7 @@ Other parameters can be founded in the script, or run `python perturbation.py -h
 
 
 ## Other files
-- log/NETWORK/model.ckpt -- the victims models (trained on ModelNet40) used in the paper, where NETWORK is one of four networks are `PN`: PointNet, `PN1`:[PointNet++ (MSG)](https://github.com/charlesq34/pointnet2) , `PN2`: [PointNet++ (SSG)](https://github.com/charlesq34/pointnet2),  `GCN`: [DGCNN](https://liuziwei7.github.io/projects/DGCNN)
+- log/`NETWORK`/model.ckpt -- the victims models (trained on ModelNet40) used in the paper, where `NETWORK` is one of four networks `PN`: [PointNet](https://arxiv.org/abs/1612.00593), `PN1`:[PointNet++ (MSG)](https://github.com/charlesq34/pointnet2) , `PN2`: [PointNet++ (SSG)](https://github.com/charlesq34/pointnet2),  `GCN`: [DGCNN](https://liuziwei7.github.io/projects/DGCNN)
 - data/attacked_data.z -- the victim data used in the paper. It can be loaded with `joblib.load`, resulting in a Python list whose element is a numpy array (shape: 25\*1024\*3; 25 objects of the same class, each object is represented by 1024 points)
 - **gen_initial.py** -- used to generate initial points for adversarial cluster/object. The script uses DBSCAN to cluster the generated critical points.
 - critical -- the default directory to dump the generated initial points
