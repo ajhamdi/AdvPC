@@ -27,7 +27,7 @@ from my_utils import *
 from evaluate import evaluate
 # Use to save Neural-Net check-points etc.
 # Use to save Neural-Net check-points etc.
-
+# `python -c 'import tensorflow as tf; print(tf.sysconfig.get_lib() + "/python/_pywrap_tensorflow_internal.so")' | xargs ldd`
 
 # import tf_nndistance
 import joblib
@@ -46,7 +46,7 @@ parser.add_argument('--data_dir', default='data', help='data folder path [data]'
 parser.add_argument('--dump_dir', default='results', help='dump folder path [perturbation]')
 
 parser.add_argument('--evaluation_mode', type=int, default=0,
-                    help='the int type of evaluation mode : 0: regular targeted attack  .. 1: regular untargeted attack')
+                    help='the int type of evaluation mode : 0: targeted attack  .. 1: untargeted attack')
 parser.add_argument('--srs', type=float, default=0.1,
                     help='SRS percentage of the SRS defense if --evaluation_mode== 1')
 parser.add_argument('--sor', type=float, default=1.1,
