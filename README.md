@@ -1,7 +1,7 @@
 # AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds (ECCV 2020)
 By [Abdullah Hamdi](https://abdullahamdi.com/), Sara Rojas , Ali Thabet, [Bernard Ghanem](http://www.bernardghanem.com/)
 
-official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds](https://arxiv.org/abs/1912.00461)"
+The official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds](https://arxiv.org/abs/1912.00461)". We perform transferable adversarial attacks on 3D point clouds by utilizing a point cloud autoencoder. we exceed SOTA by up to 40% on transferability and 38% in breaking SOTA 3D defenses on ModelNet40 data.
 
 <img src="https://github.com/ajhamdi/AdvPC/blob/master/doc/pipeline.png" width="80%" alt="attack pipeline" align=center>
 
