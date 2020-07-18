@@ -9,11 +9,8 @@ import os
 import imp
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# print(20*"@", os.path.join(BASE_DIR))
 sys.path.append(BASE_DIR)
-# sys.path.append(os.path.join(BASE_DIR, '..', '..', 'models'))
-sys.path.append("/home/hamdiaj/notebooks/learning_torch/data/3d-adv-pc/utils")
-sys.path.append("/home/hamdiaj/pointcloudattacks/utils")
+sys.path.append(os.path.join(BASE_DIR, "..", "..",'utils'))
 
 # from transform_nets import input_transform_net, feature_transform_net
 import os.path as osp

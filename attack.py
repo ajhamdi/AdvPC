@@ -38,7 +38,7 @@ parser.add_argument('--exp_id', type=str, default='exp0',help='pick ')
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 # parser.add_argument('--model', default='pointnet_cls_w_ae', help='Model name: pointnet_cls or pointnet_cls_basic [default: pointnet_cls]')
 parser.add_argument('--network', default='PN', choices=['PN', 'PN1', 'PN2',"GCN"], 
-    help='the network used to perform the attack , PN1: POintNet , PN2 : POinNEt ++ , PN3: POneNet++ w/ 2 scales , GCN : DCGCN network   ')
+    help='the network used to perform the attack , PN: POintNet , PN1 : POinNEt ++ MSG , PN2: POneNet++ SSG , GCN : DCGCN network   ')
 # parser.add_argument('--log_dir', default='log', help='Log dir [default: log]')
 parser.add_argument('--batch_size', type=int, default=5, help='Batch Size for attack [default: 5]')
 parser.add_argument('--num_point', type=int, default=1024, help='Point Number [256/512/1024/2048] [default: 1024]')
