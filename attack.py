@@ -52,9 +52,9 @@ parser.add_argument('--srs', type=float, default=0.1,
 parser.add_argument('--sor', type=float, default=1.1,
                     help='SOR percentage of the SOR defense if --evaluation_mode== 2')
 
-parser.add_argument('--hard_bound_mode', type=int, default=0,
+parser.add_argument('--hard_bound_mode', type=int, default=1,
    help='the int type of hard bound mode : 0: no upper hard bound... 1: u_infty upper hard bound on L infty 2: u_two upper hard bound on L 2')
-parser.add_argument('--dyn_bound_mode', type=int, default=0,
+parser.add_argument('--dyn_bound_mode', type=int, default=1,
                     help='the int type of dyn bound mode : 0: no upper dyn bound... 1: b_infty upper hard bound on L infty 2: b_two upper hard bound on L 2')
 parser.add_argument('--target', type=int, default=5, help='target class index')
 parser.add_argument('--unnecessary', type=int, default=0, help='target class index')
@@ -73,7 +73,7 @@ parser.add_argument('--u_infty', type=float, default=0.362,
 parser.add_argument('--u_two', type=float, default=0.362,
                     help='hard_upper_bound on L two')
 
-parser.add_argument('--beta_two', type=float, default=1,
+parser.add_argument('--beta_two', type=float, default=0.0,
                     help='L 2 factor')
 parser.add_argument('--beta_infty', type=float, default=0.0,
                     help='L infty factor')
