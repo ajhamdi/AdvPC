@@ -43,7 +43,7 @@ parser.add_argument('--network', default='PN', choices=['PN', 'PN1', 'PN2',"GCN"
 parser.add_argument('--batch_size', type=int, default=5, help='Batch Size for attack [default: 5]')
 parser.add_argument('--num_point', type=int, default=1024, help='Point Number [256/512/1024/2048] [default: 1024]')
 parser.add_argument('--data_dir', default='data', help='data folder path [data]')
-parser.add_argument('--dump_dir', default='natural', help='dump folder path [perturbation]')
+parser.add_argument('--dump_dir', default='results', help='dump folder path [perturbation]')
 
 parser.add_argument('--evaluation_mode', type=int, default=0,
                     help='the int type of evaluation mode : 0: regukar targeted attack  .. 1: relativisitic loss targeteed attack   2:regular untargeted attack  3: relativisitic untargeted attack   ')
