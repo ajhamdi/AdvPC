@@ -52,7 +52,7 @@ python attack.py --phase all --network NETWORK --step=1 --batch_size=5 --num_ite
 
 Other parameters can be founded in the script, or run `python attack.py -h`. The default parameters are the ones used in the paper.
 
-The results will be saved in `results/exp0/` with the original point cloud and attacked point cloud saved as `V_T_B_orig.npy` and `V_T_B_adv.npy` respectively. `V` is the victim class of the expirements (out of ModelNet 40 classes ) and `T` is the target class (100 if untargeted attack) , and `B` is the batch number. By default the code will iterate over all the victims and targets in our test data `attacked_data.z`. 
+The results will be saved in `results/exp0/` with the original point cloud and attacked point cloud saved as `V_T_B_orig.npy` and `V_T_B_adv.npy` respectively. `V` is the victim class of the expirements (out of ModelNet 40 classes ) and `T` is the target class (100 if untargeted attack) , and `B` is the batch number. By default the code will iterate over all the victims and targets in our test data `data/attacked_data.z`. A summary table of the evaluation of teh attack output will be saved in `results/exp0/exp0_all.csv` 
 
 
 ## Other files
@@ -61,7 +61,6 @@ The results will be saved in `results/exp0/` with the original point cloud and a
 - utils/tf_nndistance -- a self-defined tensorlfow op used for Chamfer/Hausdorff distance calculation. Use tf_nndistance_compile.sh to compile the op. The bash code may need modification according to the version and installtion path of CUDA. Note that it should be OK to directly calculate Chamfer/Hausdorff distance with available tf ops instead of tf_nndistance.
 
 ## Misc
-- The sample adversarial point clouds can be downloaded [here](https://drive.google.com/open?id=1KLtJXFpq70YkB2DAxfUYyrWcv8kbkUJd)
 - The aligned version of ModelNet40 data (in point cloud data format) can be downloaded [here](https://drive.google.com/open?id=1m7BmdtX1vWrpl9WRX5Ds2qnIeJHKmE36).
 - The visulization in the paper is rendered with [pptk](https://github.com/heremaps/pptk)
 - Please open an issue or contact Abdullah Hamdi (abdullah.hamdi@kaust.edu.sa) if there is any question.
