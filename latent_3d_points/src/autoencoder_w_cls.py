@@ -28,7 +28,7 @@ class Configuration():
                  dyn_bound_mode=0 , loss='chamfer', gauss_augment=None,
                  saver_max_to_keep=None, loss_display_step=1, b_infty=0.01, b_two = 0.01,
                  u_infty=0.01, u_two=0.01, debug=False,
-                 n_z=None, n_output=None, latent_vs_recon=1.0, consistent_io=None):
+                 n_z=None, n_output=None, latent_vs_recon=1.0, consistent_io=None,use_ae = True):
 
         # Parameters for any AE
         self.n_input = n_input
@@ -56,6 +56,7 @@ class Configuration():
         self.saver_max_to_keep = saver_max_to_keep
         self.training_epochs = training_epochs
         self.debug = debug
+        self.use_ae = use_ae
 
         # Used in VAE
         self.latent_vs_recon = np.array([latent_vs_recon], dtype=np.float32)[0]

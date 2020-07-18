@@ -80,23 +80,24 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
             self.x_h = self.x+self.pert_
             self.z = c.encoder(self.x_h, **c.encoder_args)
             self.bottleneck_size = int(self.z.get_shape()[1])
-            layer = c.decoder(self.z, **c.decoder_args)
-            
-            if c.exists_and_is_not_none('close_with_tanh'):
-                layer = tf.nn.tanh(layer)
-            
+            if c.use_ae:
+                layer = c.decoder(self.z, **c.decoder_args)
+                
+                if c.exists_and_is_not_none('close_with_tanh'):
+                    layer = tf.nn.tanh(layer)
+                
 
-            self.x_reconstr = tf.reshape(layer, [-1, self.n_output[0], self.n_output[1]])
-            # print("@"*40, [x.name for x in tf.global_variables()
-            #                if x.name != 'single_class_ae/pert:0'])
-            self.saver = tf.train.Saver(
-                [x for x in tf.global_variables()
-                 if 'pert' not in x.name and "single_class_ae" in x.name and "clip_by_value" not in x.name], max_to_keep=c.saver_max_to_keep)
+                self.x_reconstr = tf.reshape(layer, [-1, self.n_output[0], self.n_output[1]])
+                # print("@"*40, [x.name for x in tf.global_variables()
+                #                if x.name != 'single_class_ae/pert:0'])
+                self.saver = tf.train.Saver(
+                    [x for x in tf.global_variables()
+                    if 'pert' not in x.name and "single_class_ae" in x.name and "clip_by_value" not in x.name], max_to_keep=c.saver_max_to_keep)
             # self.pred, self.end_points = self.get_model_w_ae(
             #     is_training=tf.constant(False, dtype=tf.bool))
 
-            self._create_loss()
-            self._setup_optimizer()
+                self._create_loss()
+                self._setup_optimizer()
 
             # GPU configuration
             if hasattr(c, 'allow_gpu_growth'):
@@ -147,6 +148,13 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
         return match_cost(set_1, set_2, match)
 
 
+    def knn_loss(self,input_point_cloud, K=10):
+        adj_matrix = tf_util.pairwise_distance(input_point_cloud)
+        nn_idx = tf_util.knn(adj_matrix, k=K)
+        knn_distances = tf_util.get_neighbor_distances(
+            input_point_cloud, nn_idx=nn_idx, k=K)
+        knn_loss_val = tf.reduce_mean(knn_distances, [1, 2])
+        return knn_loss_val
 
     def _setup_optimizer(self):
         c = self.configuration
@@ -275,6 +283,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
 
         # MLP on global point cloud vector
         net = tf.reshape(net, [batch_size, -1]) 
+        end_points['post_max'] = net
         net = tf_util.fully_connected(net, 512, bn=True, is_training=is_training,
                                         scope='fc1', bn_decay=bn_decay)
         net = tf_util.dropout(net, keep_prob=0.5, is_training=is_training,
@@ -283,6 +292,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
                                         scope='fc2', bn_decay=bn_decay)
         net = tf_util.dropout(net, keep_prob=0.5, is_training=is_training,
                                 scope='dp2')
+        end_points['final'] = net
         net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
 
         return net, end_points
@@ -312,6 +322,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
 
         # Fully connected layers
         net = tf.reshape(l3_points, [batch_size, -1])
+        end_points['post_max'] = net
         net = tf_util.fully_connected(
             net, 512, bn=True, is_training=is_training, scope='fc1', bn_decay=bn_decay)
         net = tf_util.dropout(net, keep_prob=0.5,
@@ -320,6 +331,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
             net, 256, bn=True, is_training=is_training, scope='fc2', bn_decay=bn_decay)
         net = tf_util.dropout(net, keep_prob=0.5,
                             is_training=is_training, scope='dp2')
+        end_points['final'] = net
         net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
 
         return net, end_points
@@ -346,6 +358,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
 
         # Fully connected layers
         net = tf.reshape(l3_points, [batch_size, -1])
+        end_points['post_max'] = net
         net = tf_util.fully_connected(
             net, 512, bn=True, is_training=is_training, scope='fc1', bn_decay=bn_decay)
         net = tf_util.dropout(net, keep_prob=0.4,
@@ -354,6 +367,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
             net, 256, bn=True, is_training=is_training, scope='fc2', bn_decay=bn_decay)
         net = tf_util.dropout(net, keep_prob=0.4,
                             is_training=is_training, scope='dp2')
+        end_points['final'] = net
         net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
 
         return net, end_points
@@ -372,12 +386,15 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
             transform = self.input_transform_net(
                 input_x,is_training, bn_decay, K=3)
         point_cloud_transformed = tf.matmul(input_x, transform)
+        end_points['first'] = point_cloud_transformed
+
         input_image = tf.expand_dims(point_cloud_transformed, -1)
 
         net = tf_util.conv2d(input_image, 64, [1, 3],
                             padding='VALID', stride=[1, 1],
                             bn=True, is_training=is_training,
                             scope='conv1', bn_decay=bn_decay)
+        end_points['second'] = net
         net = tf_util.conv2d(net, 64, [1, 1],
                             padding='VALID', stride=[1, 1],
                             bn=True, is_training=is_training,
@@ -408,10 +425,11 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
         # Symmetric function: max pooling
         net = tf_util.max_pool2d(net, [num_point, 1],
                                 padding='VALID', scope='maxpool')
-        end_points['post_max'] = net
         #print("after maxpool")
         #print(net.get_shape())
         net = tf.reshape(net, [batch_size, -1])
+        end_points['post_max'] = net
+
         #print("after reshape")
         #print(net.get_shape())
         net = tf_util.fully_connected(net, 512, bn=True, is_training=is_training,
@@ -422,6 +440,7 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
                                     scope='fc2', bn_decay=bn_decay)
         net = tf_util.dropout(net, keep_prob=0.7, is_training=is_training,
                             scope='dp2')
+        end_points['final'] = net
         net = tf_util.fully_connected(net, 40, activation_fn=None, scope='fc3')
 
         #print(end_points['pre_max'].get_shape())
@@ -442,6 +461,54 @@ class PointNetAutoEncoderWithClassifier(AutoEncoder):
             real = tf.reduce_sum((tlab) * unscaled_logits, 1)
             other = tf.reduce_max((1 - tlab) * unscaled_logits -
                                 (tlab * 10000), 1)
+            loss1 = tf.maximum(np.asarray(
+                0., dtype=np.dtype('float32')), other - real + kappa)
+            return tf.reduce_mean(loss1)
+    
+    def get_untargeted_adv_loss(self, unscaled_logits, victim, kappa=0):
+
+        with tf.variable_scope('adv_loss'):
+            unscaled_logits_shape = tf.shape(unscaled_logits)
+
+            B = unscaled_logits_shape[0]
+            K = unscaled_logits_shape[1]
+
+            tlab = tf.one_hot(victim, depth=K, on_value=1., off_value=0.)
+            tlab = tf.expand_dims(tlab, 0)
+            tlab = tf.tile(tlab, [B, 1])
+            # c_targets = tf.reduce_max((1 - tlab) * unscaled_logits - (tlab * 10000), 1)
+            c_targets = tf.argmax(
+                (1 - tlab) * unscaled_logits - (tlab * 10000), 1)
+
+            c_tlab = tf.one_hot(c_targets, depth=K, on_value=1., off_value=0.)
+
+            real = tf.reduce_sum((c_tlab) * unscaled_logits, 1)
+            other = tf.reduce_max((1 - c_tlab) * unscaled_logits -
+                                  (c_tlab * 10000), 1)
+            loss1 = tf.maximum(np.asarray(
+                0., dtype=np.dtype('float32')), other - real + kappa)
+            return tf.reduce_mean(loss1)
+
+    def get_untargeted_adv_loss_batch(self, unscaled_logits, victim, kappa=0):
+
+        with tf.variable_scope('adv_loss'):
+            unscaled_logits_shape = tf.shape(unscaled_logits)
+
+            B = unscaled_logits_shape[0]
+            K = unscaled_logits_shape[1]
+
+            tlab = tf.one_hot(victim, depth=K, on_value=1., off_value=0.)
+            # tlab = tf.expand_dims(tlab, 0)
+            # tlab = tf.tile(tlab, [B, 1])
+            # c_targets = tf.reduce_max((1 - tlab) * unscaled_logits - (tlab * 10000), 1)
+            c_targets = tf.argmax(
+                (1 - tlab) * unscaled_logits - (tlab * 10000), 1)
+
+            c_tlab = tf.one_hot(c_targets, depth=K, on_value=1., off_value=0.)
+
+            real = tf.reduce_sum((c_tlab) * unscaled_logits, 1)
+            other = tf.reduce_max((1 - c_tlab) * unscaled_logits -
+                                  (c_tlab * 10000), 1)
             loss1 = tf.maximum(np.asarray(
                 0., dtype=np.dtype('float32')), other - real + kappa)
             return tf.reduce_mean(loss1)
