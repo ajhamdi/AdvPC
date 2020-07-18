@@ -39,9 +39,6 @@ Other parameters can be founded in the script, or run `python attack.py -h`. The
 ## Other files
 - log/`NETWORK`/model.ckpt -- the victims models (trained on ModelNet40) used in the paper, where `NETWORK` is one of four networks `PN`: [PointNet](https://arxiv.org/abs/1612.00593), `PN1`:[PointNet++ (MSG)](https://github.com/charlesq34/pointnet2) , `PN2`: [PointNet++ (SSG)](https://github.com/charlesq34/pointnet2),  `GCN`: [DGCNN](https://liuziwei7.github.io/projects/DGCNN)
 - data/attacked_data.z -- the victim data used in the paper. It can be loaded with `joblib.load`, resulting in a Python list whose element is a numpy array (shape: 25\*1024\*3; 25 objects of the same class, each object is represented by 1024 points)
-- **gen_initial.py** -- used to generate initial points for adversarial cluster/object. The script uses DBSCAN to cluster the generated critical points.
-- critical -- the default directory to dump the generated initial points
-- data/airplane.py -- the airplane object used in the paper as a uav for the adversarial object. can be loaded with ```np.load```.
 - utils/tf_nndistance -- a self-defined tensorlfow op used for Chamfer/Hausdorff distance calculation. Use tf_nndistance_compile.sh to compile the op. The bash code may need modification according to the version and installtion path of CUDA. Note that it should be OK to directly calculate Chamfer/Hausdorff distance with available tf ops instead of tf_nndistance.
 
 ## compiling tf_ops C++ libraries 
@@ -55,17 +52,14 @@ Other parameters can be founded in the script, or run `python attack.py -h`. The
 - run `make` 
 
 ## Misc
-- The sample adversarial point clouds can be downloaded [here](https://drive.google.com/open?id=1KLtJXFpq70YkB2DAxfUYyrWcv8kbkUJd). The targeted model is log/model.ckpt
+- The sample adversarial point clouds can be downloaded [here](https://drive.google.com/open?id=1KLtJXFpq70YkB2DAxfUYyrWcv8kbkUJd)
 - The aligned version of ModelNet40 data (in point cloud data format) can be downloaded [here](https://drive.google.com/open?id=1m7BmdtX1vWrpl9WRX5Ds2qnIeJHKmE36).
-- The visulization in the paper is rendered with MeshLab
+- The visulization in the paper is rendered with [pptk](https://github.com/heremaps/pptk)
 - Please open an issue or contact Abdullah Hamdi (abdullah.hamdi@kaust.edu.sa) if there is any question.
 
 ## Acknoledgements
 This paper and repo borrows codes and ideas from several great github repos:
-- [latent 3D point clouds](https://github.com/optas/latent_3d_points) 
-- [3d-adv-pc](https://github.com/xiangchong1/3d-adv-pc)
-- [Dynamic Graph CNN for Learning on Point Clouds](https://liuziwei7.github.io/projects/DGCNN)
-- [PointNet ++](https://github.com/charlesq34/pointnet2)
+[latent 3D point clouds](https://github.com/optas/latent_3d_points) , [3d-adv-pc](https://github.com/xiangchong1/3d-adv-pc), [Dynamic Graph CNN for Learning on Point Clouds](https://liuziwei7.github.io/projects/DGCNN), [PointNet ++](https://github.com/charlesq34/pointnet2)
 
 ## License
 The code is released under MIT License (see LICENSE file for details).
