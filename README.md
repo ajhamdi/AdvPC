@@ -28,9 +28,9 @@ Other required packages include numpy, joblib, sklearn, etc.( see [environment.y
 - conda activate NAME
 - conda install tensorflow-gpu=1.10.0
 - conda install -c anaconda cudatoolkit==9
--  make sure everything is there nvcc --version / gcc --version / whereis nvcc
-- look for TF paths in your device, it should be something like this `/home/USERNAME/.local/lib/python2.7/site-packages/tensorflow`
-- change `TF_INC`,`TF_LIB`,`nsync` in the **makefile** file in `latent_3d_points/external/structural_losses/makefile` according to the above TF path
+- make sure CUDA/Cudnn is there by running `nvcc --version` , `gcc --version`, `whereis nvcc`
+- look for TensorFlow paths in your device, it should be something like this `/home/USERNAME/.local/lib/python2.7/site-packages/tensorflow`
+- change `TF_INC`,`TF_LIB`,`nsync` in the **makefile** file in `latent_3d_points/external/structural_losses/` according to the above TF path
 - run `make` inside the above the directory
 
 ## Usage
