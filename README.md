@@ -20,52 +20,52 @@ If you find our work useful in your research, please consider citing:
 ## Requirement
 This code is tested with Python 2.7 and Tensorflow 1.10.0
 
-Other required packages include numpy, joblib, sklearn, etc. 
+Other required packages include numpy, joblib, sklearn, etc.( see `environment.yml`)
 
 ## Usage
 There are two main Python scripts in the root directorty: 
 - attack.py -- AdvPC Adversarial Point Pertubations
 - evaluate.py -- code to evaluate the atcked point clouds under different networks and defeneses
 
-To run AdPV to attack network `NETWORK` and also evaluate the the attack, please use the following command under L_infty norm budget :
+To run AdPV to attack network `NETWORK` and also evaluate the the attack, please use the following command under  :
 ```
-python attack.py --phase all --network NETWORK --step=1 --batch_size=5 --num_iter=100 --lr_attack=0.01 --initial_weight=10 --gamma=0.25 --beta_two=0 --hard_bound_mode=1 --dyn_bound_mode=1 --b_infty=0.1 --u_infty=0.1
+python attack.py --phase all --network NETWORK --step=1 --batch_size=5 --num_iter=100 --lr_attack=0.01 --gamma=0.25 --b_infty=0.1 --u_infty=0.1
 ```
-
+- `NETWORK` is one of four networks : **PN**: [PointNet](https://arxiv.org/abs/1612.00593), **PN1**:[PointNet++ (MSG)](https://github.com/charlesq34/pointnet2) , **PN2**: [PointNet++ (SSG)](https://github.com/charlesq34/pointnet2),  **GCN**: [DGCNN](https://liuziwei7.github.io/projects/DGCNN)
+- `b_infty` , `u_infty` is the L_infty norm budget used in the experiments.
+- `step` is the number of different initilizations for the attack.
+- `lr_attack` is the learning rate of the attack.
+- `gamma` is the main hyper parameter of **AdvPC** (that trades-off success with transferablity).
+- `num_iter` is the number of iterations in the optimzation.
 Other parameters can be founded in the script, or run `python attack.py -h`. The default parameters are the ones used in the paper.
 
 
 
+
 ## Other files
-- log/`NETWORK`/model.ckpt -- the victims models (trained on ModelNet40) used in the paper, where `NETWORK` is one of four networks `PN`: [PointNet](https://arxiv.org/abs/1612.00593), `PN1`:[PointNet++ (MSG)](https://github.com/charlesq34/pointnet2) , `PN2`: [PointNet++ (SSG)](https://github.com/charlesq34/pointnet2),  `GCN`: [DGCNN](https://liuziwei7.github.io/projects/DGCNN)
+- log/`NETWORK`/model.ckpt -- the victims models (trained on ModelNet40) used in the paper, where `NETWORK` is one of four networks **PN**: [PointNet](https://arxiv.org/abs/1612.00593), **PN1**:[PointNet++ (MSG)](https://github.com/charlesq34/pointnet2) , **PN2**: [PointNet++ (SSG)](https://github.com/charlesq34/pointnet2),  **GCN**: [DGCNN](https://liuziwei7.github.io/projects/DGCNN)
 - data/attacked_data.z -- the victim data used in the paper. It can be loaded with `joblib.load`, resulting in a Python list whose element is a numpy array (shape: 25\*1024\*3; 25 objects of the same class, each object is represented by 1024 points)
-- **gen_initial.py** -- used to generate initial points for adversarial cluster/object. The script uses DBSCAN to cluster the generated critical points.
-- critical -- the default directory to dump the generated initial points
-- data/airplane.py -- the airplane object used in the paper as a uav for the adversarial object. can be loaded with ```np.load```.
 - utils/tf_nndistance -- a self-defined tensorlfow op used for Chamfer/Hausdorff distance calculation. Use tf_nndistance_compile.sh to compile the op. The bash code may need modification according to the version and installtion path of CUDA. Note that it should be OK to directly calculate Chamfer/Hausdorff distance with available tf ops instead of tf_nndistance.
 
-## compiling tf_ops C++ libraries 
+## creating conda environment and compiling tf_ops C++ libraries 
 - conda create -n NAME python=2.7 anaconda
 - conda activate NAME
 - conda install tensorflow-gpu=1.10.0
 - conda install -c anaconda cudatoolkit==9
 -  make sure everything is there nvcc --version / gcc --version / whereis nvcc
-- look for TF paths python -c 'import tensorflow as tf; print(tf.sysconfig.get_lib() + "/python/_pywrap_tensorflow_internal.so")' | xargs lddpython -c 'import tensorflow as tf; print(tf.sysconfig.get_lib() + "/python/_pywrap_tensorflow_internal.so")' | xargs ldd
-- change paths in the makefile file
-- run `make` 
+- look for TF paths `python -c 'import tensorflow as tf; print(tf.sysconfig.get_lib() + "/python/_pywrap_tensorflow_internal.so")' | xargs ldd`
+- change TF_PATHS in the **makefile** file in `latent_3d_points/external/structural_losses/makefile`
+- run `make` inside the above the directory
 
 ## Misc
-- The sample adversarial point clouds can be downloaded [here](https://drive.google.com/open?id=1KLtJXFpq70YkB2DAxfUYyrWcv8kbkUJd). The targeted model is log/model.ckpt
+- The sample adversarial point clouds can be downloaded [here](https://drive.google.com/open?id=1KLtJXFpq70YkB2DAxfUYyrWcv8kbkUJd)
 - The aligned version of ModelNet40 data (in point cloud data format) can be downloaded [here](https://drive.google.com/open?id=1m7BmdtX1vWrpl9WRX5Ds2qnIeJHKmE36).
-- The visulization in the paper is rendered with MeshLab
+- The visulization in the paper is rendered with [pptk](https://github.com/heremaps/pptk)
 - Please open an issue or contact Abdullah Hamdi (abdullah.hamdi@kaust.edu.sa) if there is any question.
 
 ## Acknoledgements
 This paper and repo borrows codes and ideas from several great github repos:
-- [latent 3D point clouds](https://github.com/optas/latent_3d_points) 
-- [3d-adv-pc](https://github.com/xiangchong1/3d-adv-pc)
-- [Dynamic Graph CNN for Learning on Point Clouds](https://liuziwei7.github.io/projects/DGCNN)
-- [PointNet ++](https://github.com/charlesq34/pointnet2)
+[latent 3D point clouds](https://github.com/optas/latent_3d_points) , [3d-adv-pc](https://github.com/xiangchong1/3d-adv-pc), [Dynamic Graph CNN for Learning on Point Clouds](https://liuziwei7.github.io/projects/DGCNN), [PointNet ++](https://github.com/charlesq34/pointnet2)
 
 ## License
 The code is released under MIT License (see LICENSE file for details).
