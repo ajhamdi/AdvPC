@@ -337,7 +337,7 @@ def attack(setup,models,targets_list,victims_list):
         infty_weight = tf.placeholder(shape=[BATCH_SIZE], dtype=tf.float32)
         lr_attack=tf.placeholder(dtype=tf.float32)
         attack_optimizer = tf.train.AdamOptimizer(lr_attack)
-        l_2_loss = tf.reduce_mean(tf.multiply(dist_weight, pert_norm))
+        l_2_loss = tf.reduce_mean(tf.multiply(dist_weight, pert_norm))1`
         l_cham_loss = tf.reduce_mean(tf.multiply(cham_weight, pert_cham))
         l_emd_loss = tf.reduce_mean(tf.multiply(emd_weight, pert_emd))
 
