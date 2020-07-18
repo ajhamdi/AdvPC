@@ -3,9 +3,7 @@ By [Abdullah Hamdi](https://abdullahamdi.com/), Sara Rojas , Ali Thabet, [Bernar
 
 official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds](https://arxiv.org/abs/1912.00461)"
 
-<img src="https://github.com/ajhamdi/AdvPC/blob/master/doc/pipeline.png" width="50%" alt="attack pipeline" align=center>
-
-<img src="https://github.com/ajhamdi/AdvPC/blob/master/doc/CECCV_abstract.png" width="80%" alt="attack pipeline" align=center>
+<img src="https://github.com/ajhamdi/AdvPC/blob/master/doc/pipeline.png" width="80%" alt="attack pipeline" align=center>
 
 
 ## Citation
