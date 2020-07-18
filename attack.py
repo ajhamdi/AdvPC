@@ -34,7 +34,7 @@ import joblib
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--phase', type=str, default='attack', choices=['attack', 'evaluate','all'], help='perform attack or evaluate performed attack or both')
-parser.add_argument('--exp_id', type=str, default='random',help='pick ')
+parser.add_argument('--exp_id', type=str, default='exp0',help='pick ')
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 # parser.add_argument('--model', default='pointnet_cls_w_ae', help='Model name: pointnet_cls or pointnet_cls_basic [default: pointnet_cls]')
 parser.add_argument('--network', default='PN', choices=['PN', 'PN1', 'PN2',"GCN"], 
@@ -46,7 +46,7 @@ parser.add_argument('--data_dir', default='data', help='data folder path [data]'
 parser.add_argument('--dump_dir', default='results', help='dump folder path [perturbation]')
 
 parser.add_argument('--evaluation_mode', type=int, default=0,
-                    help='the int type of evaluation mode : 0: regukar targeted attack  .. 1: relativisitic loss targeteed attack   2:regular untargeted attack  3: relativisitic untargeted attack   ')
+                    help='the int type of evaluation mode : 0: regular targeted attack  .. 1: regular untargeted attack')
 parser.add_argument('--srs', type=float, default=0.1,
                     help='SRS percentage of the SRS defense if --evaluation_mode== 1')
 parser.add_argument('--sor', type=float, default=1.1,
@@ -305,11 +305,9 @@ def attack(setup,models,targets_list,victims_list):
         if setup["evaluation_mode"] == 0:
             early_adv_loss = ae.get_adv_loss(early_pred, target)
         elif setup["evaluation_mode"] == 1:
-            early_adv_loss = ae.get_adv_loss(
-                early_pred, target) + ae.get_adv_loss(pointclouds_pl, victim_label)
-        elif setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3:
-            early_adv_loss = ae.get_untargeted_adv_loss(early_pred, victim_label, KAPPA)
-
+            early_adv_loss = early_adv_loss = ae.get_untargeted_adv_loss(
+                early_pred, victim_label, KAPPA)
+        
         dyn_target = tf.placeholder(tf.int32, shape=(None))
         # late_adv_loss = ae.get_adv_loss_batch(late_pred, dyn_target)
         late_adv_loss = ae.get_untargeted_adv_loss(
@@ -337,7 +335,7 @@ def attack(setup,models,targets_list,victims_list):
         infty_weight = tf.placeholder(shape=[BATCH_SIZE], dtype=tf.float32)
         lr_attack=tf.placeholder(dtype=tf.float32)
         attack_optimizer = tf.train.AdamOptimizer(lr_attack)
-        l_2_loss = tf.reduce_mean(tf.multiply(dist_weight, pert_norm))1`
+        l_2_loss = tf.reduce_mean(tf.multiply(dist_weight, pert_norm))
         l_cham_loss = tf.reduce_mean(tf.multiply(cham_weight, pert_cham))
         l_emd_loss = tf.reduce_mean(tf.multiply(emd_weight, pert_emd))
 
@@ -542,13 +540,6 @@ def attack_one_batch(sess, ops, attacked_data, setup):
 
             return np.array(all_choices)
         
-        # c_late_targets = untargeted_attack(late_pred_val,setup["victim"])
-        # feed_dict[ops['dyn_target']] = c_late_targets
-
-        # if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
-        #     c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
-        #     feed_dict[ops['target']] = c_early_targets
-
 
 
         for iteration in range(c_NUM_ITERATIONS):
@@ -584,12 +575,7 @@ def attack_one_batch(sess, ops, attacked_data, setup):
              ops['pert_norm'], ops['early_pred'], ops['late_pred'],
               ops['pointclouds_input'], ops['nat_norm'], ops["pert_cham"],
                ops["pert_emd"]], feed_dict=feed_dict)
-            # if ((iteration+1) % DYN_FREQ) == 0:
-            #     c_late_targets = untargeted_attack(late_pred_val, setup["victim"])
-            #     feed_dict[ops['dyn_target']] = c_late_targets
-            #     if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
-            #         c_early_targets = untargeted_attack(early_pred_val, setup["victim"])
-            #         feed_dict[ops['target']] = c_early_targets
+
             early_pred_val = np.argmax(early_pred_val, 1)
             late_pred_val = np.argmax(late_pred_val, 1)
             # print(20*"#", early_pred_val)
@@ -619,7 +605,7 @@ def attack_one_batch(sess, ops, attacked_data, setup):
                 dist = (two, linfty, two)[setup["dyn_bound_mode"]]  # according to the norm mode we picked we pick the best distance 
                 # if nat < besttwo[e] and pred == setup["target"]:
                 adverserial_cond = (pred == setup["target"]) if (
-                    setup["evaluation_mode"] == 0 or setup["evaluation_mode"] == 1) else (pred != setup["victim"])
+                    setup["evaluation_mode"] == 0 ) else (pred != setup["victim"])
                 ae_cond = (d_pred != setup["victim"] or ((GAMMA < 0.001)and not bool(setup["cluster_nb"])) or bool(setup["unnecessary"]))
                 if (dist < bestdist[e] or bool(setup["cluster_nb"])) and adverserial_cond and ae_cond:
                 # if two < besttwo[e] and pred == setup["target"] :
@@ -729,9 +715,9 @@ def initialize(setup,models):
         setup["save_file"] = os.path.join(setup["dump_dir"], setup["exp_id"]+".csv")
         setup["setups_file"] = os.path.join(setup["dump_dir"], setup["exp_id"]+"_setup.csv")
         setup["load_file"] = os.path.join(setup["dump_dir"],setup["exp_id"] +".csv")
-        pn1_dir = os.path.join(BASE_DIR, "..", "pointnet2")
-        pn2_dir = os.path.join(BASE_DIR, "..", "pointnet2")
-        gcn_dir = os.path.join(BASE_DIR, "..", "dgcnn", "tensorflow")
+        pn1_dir = os.path.join(BASE_DIR, "models", "pointnet2")
+        pn2_dir = os.path.join(BASE_DIR, "models", "pointnet2")
+        gcn_dir = os.path.join(BASE_DIR, "models", "dgcnn", "tensorflow")
 
         models["PN_PATH"] = os.path.join(BASE_DIR, "log", "PN", "model.ckpt")
         models["PN1_PATH"] = os.path.join(BASE_DIR, "log", "PN1", "model.ckpt")
@@ -758,7 +744,7 @@ if __name__=='__main__':
     # targets_list = [0, 5, 35, 2, 8, 33, 22, 37, 4, 30]
     targets_list = [0]
     # targets_list = [5,0,35]
-    if setup["evaluation_mode"] == 2 or setup["evaluation_mode"] == 3 :
+    if setup["evaluation_mode"] == 1 :
         targets_list = [100]
         
 
