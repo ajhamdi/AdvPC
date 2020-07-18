@@ -20,7 +20,7 @@ If you find our work useful in your research, please consider citing:
 ## Requirement
 This code is tested with Python 2.7 and Tensorflow 1.10.0
 
-Other required packages include numpy, joblib, sklearn, etc.( see `environment.yml`)
+Other required packages include numpy, joblib, sklearn, etc.( see [environment.yml](https://github.com/ajhamdi/AdvPC/blob/master/environment.yml))
 
 ## creating conda environment and compiling tf_ops C++ libraries 
 - conda create -n NAME python=2.7 anaconda
