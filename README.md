@@ -27,10 +27,12 @@ There are two main Python scripts in the root directorty:
 - attack.py -- AdvPC Adversarial Point Pertubations
 - evaluate.py -- code to evaluate the atcked point clouds under different networks and defeneses
 
-The code logics of these four scripts are similar; they attack the victim objects into the specified target class.
-The basic usage is `python perturbation.py --target=5`. 
+To run AdPV to attack network `NETWORK` and also evaluate the the attack, please use the following command under L_infty norm budget :
+```
+python attack.py --phase all --network NETWORK --step=1 --batch_size=5 --num_iter=100 --lr_attack=0.01 --initial_weight=10 --gamma=0.25 --beta_two=0 --hard_bound_mode=1 --dyn_bound_mode=1 --b_infty=0.1 --u_infty=0.1
+```
 
-Other parameters can be founded in the script, or run `python perturbation.py -h`. The default parameters are the ones used in the paper.
+Other parameters can be founded in the script, or run `python attack.py -h`. The default parameters are the ones used in the paper.
 
 
 
