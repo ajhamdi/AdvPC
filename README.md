@@ -5,6 +5,9 @@ official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbations
 
 <img src="https://github.com/ajhamdi/AdvPC/blob/master/doc/pipeline.png" width="50%" alt="attack pipeline" align=center>
 
+<img src="https://github.com/ajhamdi/AdvPC/blob/master/doc/CECCV_abstract.png" width="80%" alt="attack pipeline" align=center>
+
+
 ## Citation
 If you find our work useful in your research, please consider citing:
 ```
