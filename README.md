@@ -24,10 +24,10 @@ This code is tested with Python 2.7 and Tensorflow 1.9/1.10
 Other required packages include numpy, joblib, sklearn, etc.( see [environment.yml](https://github.com/ajhamdi/AdvPC/blob/master/environment.yml))
 
 ## creating conda environment and compiling tf_ops C++ libraries 
-- conda create -n NAME python=2.7 anaconda
-- conda activate NAME
-- conda install tensorflow-gpu=1.10.0
-- conda install -c anaconda cudatoolkit==9
+- `conda create -n NAME python=2.7 anaconda`
+- `conda activate NAME`
+- `conda install tensorflow-gpu=1.10.0`
+- `conda install -c anaconda cudatoolkit==9`
 - make sure CUDA/Cudnn is there by running `nvcc --version` , `gcc --version`, `whereis nvcc`
 - look for TensorFlow paths in your device, it should be something like this `/home/USERNAME/.local/lib/python2.7/site-packages/tensorflow`
 - change `TF_INC`,`TF_LIB`,`nsync` in the **makefile** file in `latent_3d_points/external/structural_losses/` according to the above TF path
