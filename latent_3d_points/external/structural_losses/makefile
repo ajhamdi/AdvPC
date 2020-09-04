@@ -1,6 +1,5 @@
 nvcc=/usr/local/cuda-9.0/bin/nvcc
 cudalib=/usr/local/cuda-9.0/lib64
-# tensorflow = /home/hamdiaj/.local/lib/python2.7/site-packages/tensorflow/include
 TF_INC=/home/hamdiaj/.local/lib/python2.7/site-packages/tensorflow/include
 TF_LIB=/home/hamdiaj/.local/lib/python2.7/site-packages/tensorflow
 nsync=/home/hamdiaj/.local/lib/python2.7/site-packages/tensorflow/include/external/nsync/public
