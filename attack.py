@@ -59,11 +59,11 @@ parser.add_argument('--dyn_bound_mode', type=int, default=1,
 parser.add_argument('--target', type=int, default=5, help='target class index')
 parser.add_argument('--unnecessary', type=int, default=0, help='target class index')
 parser.add_argument('--victim', type=int, default=0, help='target class index')
-parser.add_argument('--lr_attack', type=float, default=0.005, help='learning rate for optimization based attack')
+parser.add_argument('--lr_attack', type=float, default=0.01, help='learning rate for optimization based attack')
 parser.add_argument('--initial_alpha', type=float, default=0,help=' natural factor')
 
 parser.add_argument('--gamma', type=float, default=0.2,help='natural factor ')
-parser.add_argument('--kappa', type=float, default=0, help='margin of attack ')
+parser.add_argument('--kappa', type=float, default=30, help='margin of attack ')
 parser.add_argument('--kappa_ae', type=float,
                     default=0, help='margin of attack on the AE output ')
 
@@ -91,8 +91,8 @@ parser.add_argument('--b_two', type=float, default=0.2,
 
 parser.add_argument('--initial_weight', type=float, default=10, help='initial value for the parameter lambda')
 parser.add_argument('--upper_bound_weight', type=float, default=80, help='upper_bound value for the parameter lambda')
-parser.add_argument('--step', type=int, default=10, help='binary search step')
-parser.add_argument('--num_iter', type=int, default=500, help='number of iterations for each binary search step')
+parser.add_argument('--step', type=int, default=2, help='binary search step')
+parser.add_argument('--num_iter', type=int, default=200, help='number of iterations for each binary search step')
 parser.add_argument('--cluster_nb', type=int, default=0,
                     help='number of the exp in a cluster array ')
 parser.add_argument('--dyn_freq', type=int, default=10,
