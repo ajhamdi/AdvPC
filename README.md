@@ -9,13 +9,24 @@ The official code of ECCV 2020 paper "[AdvPC: Transferable Adversarial Perturbat
 ## Citation
 If you find our work useful in your research, please consider citing:
 ```
-@InProceedings{hamdi2020advpc,
-author = {Hamdi, Abdullah and Rojas, Sara and Thabet, Ali and Ghanem, Bernard},
-title = {AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds},
-booktitle = {Proceedings of the European Conference on Computer Vision (ECCV)},
-month = {September},
-year = {2020}
+@InProceedings{10.1007/978-3-030-58610-2_15,
+author="Hamdi, Abdullah
+and Rojas, Sara
+and Thabet, Ali
+and Ghanem, Bernard",
+editor="Vedaldi, Andrea
+and Bischof, Horst
+and Brox, Thomas
+and Frahm, Jan-Michael",
+title="AdvPC: Transferable Adversarial Perturbations on 3D Point Clouds",
+booktitle="Computer Vision -- ECCV 2020",
+year="2020",
+publisher="Springer International Publishing",
+address="Cham",
+pages="241--257",
+isbn="978-3-030-58610-2"
 }
+
 ```
 
 
